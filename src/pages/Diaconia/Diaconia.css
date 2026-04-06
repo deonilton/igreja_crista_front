@@ -1,0 +1,907 @@
+/* Diaconia Page Styles */
+.diaconia-page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 64px);
+}
+
+/* Statistics Card */
+.diaconia-stats-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.diaconia-stats-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+/* Diaconia Leaders Card */
+.diaconia-leaders-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Ministry Leaders Card */
+.diaconia-ministry-leaders-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+/* Actions Card */
+.diaconia-actions-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.diaconia-actions-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.action-button.primary {
+  background: rgba(93, 161, 77, 0.1);
+  border-color: #5da14d;
+  color: #4a8c3a;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(93, 161, 77, 0.15);
+}
+
+.action-button svg {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.action-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.action-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+.action-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.stat-item:hover {
+  border-color: #d1d5db;
+  background: #f3f4f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: #3b82f6;
+  color: white;
+}
+
+.stat-icon.male {
+  background: #10b981;
+}
+
+.stat-icon.female {
+  background: #ec4899;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.diaconia-header {
+  margin-bottom: 32px;
+}
+
+.diaconia-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.diaconia-header p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* Form Card */
+.diaconia-form-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.diaconia-form-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+/* Member Search */
+.member-search-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-input-wrapper .form-input {
+  flex: 1;
+  min-width: 600px;
+  padding-left: 48px;
+  padding-right: 16px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 18px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.clear-search {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.clear-search:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* Search Results */
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 9999;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.search-loading {
+  padding: 16px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.search-result-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: #f9fafb;
+}
+
+.member-info .member-name {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.member-info .member-email {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.member-info .member-phone {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.search-empty {
+  padding: 16px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* List Card */
+.diaconia-list-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.diaconia-list-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+/* Deacons Table */
+.diaconia-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.diaconia-table th,
+.diaconia-table td {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.diaconia-table th {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.diaconia-table tr:not(:last-child) td {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.diaconia-table tr {
+  transition: background 0.2s ease;
+}
+
+.diaconia-table tr:hover td {
+  background: #f9fafb;
+}
+
+.deacon-name {
+  font-weight: 600;
+  color: #111827;
+}
+
+.deacon-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Empty State */
+.deacons-empty {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.deacons-empty-icon {
+  font-size: 3rem;
+  color: #6b7280;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.deacons-empty h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.deacons-empty p {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .diaconia-page {
+    padding: 16px;
+  }
+  
+  .diaconia-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .stat-item {
+    padding: 16px;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .diaconia-table {
+    font-size: 0.75rem;
+  }
+  
+  .diaconia-table th,
+  .diaconia-table td {
+    padding: 10px 12px;
+  }
+  
+  .search-input-wrapper {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .search-input-wrapper .form-input {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .search-input-wrapper button {
+    width: 100%;
+  }
+}
+
+/* Tabs System Styles */
+.diaconia-tabs-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.diaconia-tabs-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.tabs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tabs-header {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  gap: 0;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  top: 2px;
+}
+
+.tab-button:hover {
+  color: #374151;
+  background: #f9fafb;
+}
+
+.tab-button.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+  background: #f0f9ff;
+}
+
+.tab-button svg {
+  font-size: 1rem;
+}
+
+.tabs-content {
+  padding-top: 20px;
+  overflow-x: auto;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.action-button.primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.action-button.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+  text-decoration: none;
+  color: white;
+}
+
+.action-button.secondary {
+  background: #f9fafb;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.action-button.secondary:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: #374151;
+}
+
+.action-button svg {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.action-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.action-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.action-description {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.coming-soon {
+  padding: 16px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.coming-soon p {
+  margin: 0;
+  color: #92400e;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Occurrences List Styles */
+.occurrences-list {
+  width: 100%;
+}
+
+.loading-occurrences {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.occurrences-table h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.occurrence-item {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all var(--transition-fast);
+}
+
+.occurrence-item:hover {
+  border-color: var(--primary-300);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.occurrence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.occurrence-id {
+  background: var(--primary-500);
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.occurrence-date {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.occurrence-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.occurrence-field {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.occurrence-field strong {
+  color: var(--text-secondary);
+  margin-right: 8px;
+}
+
+.occurrence-description {
+  background: var(--surface-card);
+  padding: 12px;
+  border-radius: var(--border-radius-sm);
+  border-left: 4px solid var(--primary-500);
+  margin-top: 8px;
+}
+
+.occurrence-description strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.no-occurrences {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.no-occurrences svg {
+  font-size: 3rem;
+  color: var(--gray-300);
+  margin-bottom: 16px;
+}
+
+.no-occurrences h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.no-occurrences p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Estilos para relatórios de culto */
+.cult-reports-section {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.cult-reports-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.cult-reports-header h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.cult-reports-table-container {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.cult-reports-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cult-reports-table thead {
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.cult-reports-table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.cult-reports-table th:last-child {
+  text-align: center;
+  width: 220px;
+}
+
+.cult-reports-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.cult-reports-table tbody tr.clickable-row {
+  cursor: pointer;
+}
+
+.cult-reports-table tbody tr.clickable-row:hover {
+  background-color: #f0f9ff;
+  transform: scale(1.01);
+}
+
+.cult-reports-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.cult-reports-table td {
+  padding: 16px 20px;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.table-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.table-date svg {
+  font-size: 1rem;
+  color: #3b82f6;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-action {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-action svg {
+  font-size: 0.9rem;
+}
+
+.btn-action.btn-edit {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+.btn-action.btn-edit:hover {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.btn-action.btn-delete {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.btn-action.btn-delete:hover {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.empty-state svg {
+  font-size: 3rem;
+  color: #d1d5db;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.empty-state p {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .search-input-wrapper .form-input {
+    min-width: 300px;
+  }
+  
+  .tabs-header {
+    flex-wrap: wrap;
+  }
+  
+  .tab-button {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .cult-reports-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .cult-reports-table-container {
+    overflow-x: auto;
+  }
+
+  .cult-reports-table {
+    min-width: 500px;
+  }
+
+  .cult-reports-table th,
+  .cult-reports-table td {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+  }
+}

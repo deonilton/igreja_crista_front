@@ -1,0 +1,245 @@
+.ministry-leaders-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.ministry-leaders-loading .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.ministry-leaders-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-style: italic;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.ministry-leaders-empty svg {
+  color: #9ca3af;
+}
+
+.ministry-leaders {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.leaders-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.leaders-title svg {
+  color: #3b82f6;
+}
+
+.leaders-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.leader-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leader-column-title {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.leader-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.leader-card.leader {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: #bfdbfe;
+}
+
+.leader-card.co-leader {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+.leader-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.leader-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.leader-card.leader .leader-card-icon {
+  background: #3b82f6;
+  color: white;
+}
+
+.leader-card.co-leader .leader-card-icon {
+  background: #9ca3af;
+  color: white;
+}
+
+.leader-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.leader-card-role {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.leader-card.leader .leader-card-role {
+  color: #1d4ed8;
+}
+
+.leader-card.co-leader .leader-card-role {
+  color: #6b7280;
+}
+
+.leader-card-name {
+  color: #111827;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.leader-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #d1d5db;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.leader-empty svg {
+  color: #d1d5db;
+}
+
+.leaders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leader-name {
+  color: #111827;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.leader-name:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.ministry-leaders-all {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.all-leaders-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.all-leaders-header svg {
+  color: #3b82f6;
+}
+
+.ministries-leaders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.ministry-leaders-card {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.ministry-name {
+  color: #3b82f6;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.no-leaders {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .ministries-leaders-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .leaders-grid {
+    grid-template-columns: 1fr;
+  }
+}

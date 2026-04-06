@@ -1,0 +1,141 @@
+.member-form-page {
+  max-width: 780px;
+}
+
+.member-form-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 32px;
+  animation: slideUp 0.4s ease;
+}
+
+.member-form-card h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.member-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-600);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.form-group-light label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.form-group-light label .required {
+  color: #ef4444;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+.form-group-light input,
+.form-group-light select,
+.form-group-light textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+
+.form-group-light input:focus,
+.form-group-light select:focus,
+.form-group-light textarea:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.cep-input-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cep-input-container input,
+.cep-input-container .form-input {
+  flex: 1;
+  min-width: 120px;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(99, 102, 241, 0.3);
+  border-top: 2px solid var(--primary-500);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.field-hint {
+  display: block;
+  margin-top: 4px;
+  color: var(--primary-500);
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.form-group-light input:disabled {
+  background-color: var(--gray-50);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.form-group-light input:disabled::placeholder {
+  color: var(--gray-400);
+}
+
+.form-group-light textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-group-light input::placeholder {
+  color: var(--gray-400);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+}
+
