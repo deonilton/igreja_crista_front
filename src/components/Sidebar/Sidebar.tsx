@@ -65,11 +65,11 @@ export default function Sidebar() {
       <div className="sidebar-header">
         <div className="sidebar-brand">
           <div className="sidebar-brand-icon">
-            <FiBookOpen />
+            <img src="/imagen/icf_logo.png" alt="Logo ICF" className="sidebar-logo-img" />
           </div>
           <div className="sidebar-brand-text">
-            <h2>Igreja Cristã</h2>
-            <span>Painel Admin</span>
+            <h2>ICF - Aparecida</h2>
+            <span>Painel Administrativo</span>
           </div>
         </div>
       </div>
