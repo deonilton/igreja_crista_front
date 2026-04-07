@@ -10,9 +10,10 @@ interface OccurrenceModalProps {
   onClose: () => void;
   onSuccess: () => void;
   editingOccurrence?: any;
+  ministryId: string;
 }
 
-export default function OccurrenceModal({ isOpen, onClose, onSuccess, editingOccurrence }: OccurrenceModalProps) {
+export default function OccurrenceModal({ isOpen, onClose, onSuccess, editingOccurrence, ministryId }: OccurrenceModalProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<OccurrenceFormData>({
     date: new Date().toISOString().split('T')[0],
@@ -55,7 +56,7 @@ export default function OccurrenceModal({ isOpen, onClose, onSuccess, editingOcc
 
     try {
       if (editingOccurrence) {
-        await api.put(`/occurrences/${editingOccurrence.id}`, formData);
+        await api.put(`/occurrences/${editingOccurrence.id}`, { ...formData, ministry_id: ministryId });
         Swal.fire({
           icon: 'success',
           title: 'Sucesso!',
@@ -64,7 +65,7 @@ export default function OccurrenceModal({ isOpen, onClose, onSuccess, editingOcc
           confirmButtonColor: '#3b82f6'
         });
       } else {
-        await api.post('/occurrences', formData);
+        await api.post('/occurrences', { ...formData, ministry_id: ministryId });
         Swal.fire({
           icon: 'success',
           title: 'Sucesso!',

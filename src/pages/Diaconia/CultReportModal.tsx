@@ -19,7 +19,7 @@ const programacaoItems = [
   'Palavra', 'Santa Ceia', 'Batismo', 'Apres. de criança'
 ];
 
-const defaultProgramacao = () => programacaoItems.map(() => ({ descricao: '', horario: '' }));
+const defaultProgramacao = () => programacaoItems.map(() => ({ descricao: '', horario_inicio: '', horario_termino: '' }));
 
 const defaultFormData = (): CultReportFormData => ({
   cult_type_familia: false,
@@ -126,7 +126,7 @@ export default function CultReportModal({
     });
   };
 
-  const handleProgramacaoChange = (index: number, field: 'descricao' | 'horario', value: string) => {
+  const handleProgramacaoChange = (index: number, field: 'descricao' | 'horario_inicio' | 'horario_termino', value: string) => {
     setFormData(prev => {
       const newProg = [...prev.programacao];
       newProg[index] = { ...newProg[index], [field]: value };
@@ -331,8 +331,10 @@ export default function CultReportModal({
               <div className="prog-row" key={i}>
                 <span className="label">{programacaoItems[i]}:</span>
                 <input type="text" value={item.descricao} onChange={e => handleProgramacaoChange(i, 'descricao', e.target.value)} placeholder="Responsável / descrição" className="inp-desc" />
-                <span className="hora-label">Horário:</span>
-                <input type="time" value={item.horario} onChange={e => handleProgramacaoChange(i, 'horario', e.target.value)} className="inp-hora" />
+                <span className="hora-label">Início:</span>
+                <input type="time" value={item.horario_inicio} onChange={e => handleProgramacaoChange(i, 'horario_inicio', e.target.value)} className="inp-hora" />
+                <span className="hora-label">Término:</span>
+                <input type="time" value={item.horario_termino} onChange={e => handleProgramacaoChange(i, 'horario_termino', e.target.value)} className="inp-hora" />
               </div>
             ))}
 

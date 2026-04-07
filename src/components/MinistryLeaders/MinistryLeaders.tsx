@@ -50,7 +50,6 @@ function MinistryLeadersView({ ministry, showTitle = true }: { ministry: Ministr
     <div className="ministry-leaders">
       {showTitle && (
         <div className="leaders-title">
-          <FiUsers />
           <span>Líderes do Ministério {getDisplayName(ministry)}</span>
         </div>
       )}

@@ -117,10 +117,109 @@ a.btn {
   pointer-events: none;
 }
 
-/* Icon styling */
+/* Action Edit variant - Azul */
+.btn-action-edit {
+  background: #dbeafe !important;
+  color: #3b82f6 !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+}
+
+.btn-action-edit:hover:not(.btn-disabled) {
+  background: #3b82f6 !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Action Delete variant - Vermelho */
+.btn-action-delete {
+  background: #fee2e2 !important;
+  color: #ef4444 !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+}
+
+.btn-action-delete:hover:not(.btn-disabled) {
+  background: #ef4444 !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Ícones nas variantes de ação */
+.btn-action-edit .btn-icon,
+.btn-action-edit .btn-icon svg,
+.btn-action-delete .btn-icon,
+.btn-action-delete .btn-icon svg {
+  transition: none !important;
+  color: inherit !important;
+}
 .btn-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1em;
+}
+
+/* Garantir que ícones sempre sejam visíveis e sem efeitos */
+.btn .btn-icon,
+.btn .btn-icon svg {
+  color: inherit;
+  fill: currentColor;
+  transition: none;
+}
+
+/* Ícone em botão primary - sempre branco, sem efeito */
+.btn-primary .btn-icon,
+.btn-primary .btn-icon svg {
+  color: white;
+  transition: none;
+}
+
+/* Ícone em botão danger - sempre branco, sem efeito */
+.btn-danger .btn-icon,
+.btn-danger .btn-icon svg {
+  color: white;
+  transition: none;
+}
+
+/* Ícone em botão ghost - herda cor do botão, sem efeito */
+.btn-ghost .btn-icon,
+.btn-ghost .btn-icon svg {
+  color: inherit;
+  transition: none;
+}
+
+/* Remover qualquer hover effect nos ícones */
+.btn:hover .btn-icon,
+.btn:hover .btn-icon svg,
+.btn:active .btn-icon,
+.btn:active .btn-icon svg,
+.btn .btn-icon:hover,
+.btn .btn-icon:hover svg {
+  transform: none !important;
+  color: inherit !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.btn-primary:hover .btn-icon,
+.btn-primary:hover .btn-icon svg,
+.btn-primary .btn-icon:hover,
+.btn-primary .btn-icon:hover svg {
+  color: white !important;
+  background: transparent !important;
+}
+
+.btn-danger:hover .btn-icon,
+.btn-danger:hover .btn-icon svg,
+.btn-danger .btn-icon:hover,
+.btn-danger .btn-icon:hover svg {
+  color: white !important;
+  background: transparent !important;
 }

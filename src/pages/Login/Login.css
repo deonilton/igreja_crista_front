@@ -36,9 +36,7 @@
   width: 100%;
   max-width: 140px;
   height: auto;
-  border-radius: var(--border-radius-lg);
   object-fit: cover;
-  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
 }
 
 .login-image-placeholder {
@@ -179,6 +177,48 @@
 
 .form-input::placeholder {
   color: var(--gray-500);
+}
+
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.password-toggle-btn:hover {
+  color: var(--primary-500);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.password-toggle-btn:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+.password-toggle-btn svg {
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .form-input:focus {
