@@ -6,11 +6,12 @@ import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import type { SmallFamily, SmallFamiliesResponse, MemberSearchResult, FullSmallFamily } from '../../types/smallFamilies';
 import Pagination from '../../components/Pagination/Pagination';
-import Button from '../../components/Button/Button';
+import Button from '../../components/Button';
 import MinistryLeaders from '../../components/MinistryLeaders/MinistryLeaders';
 import SmallFamilyReportModal from './SmallFamilyReportModal';
 import CreateSmallFamilyModal from './CreateSmallFamilyModal';
 import ViewSmallFamilyModal from './ViewSmallFamilyModal';
+import OccurrenceModal from './OccurrenceModal';
 import './PequenasFamilias.css';
 
 export default function PequenasFamilias() {
@@ -52,6 +53,7 @@ export default function PequenasFamilias() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [editingReport, setEditingReport] = useState<any>(null);
   const [showCreateFamilyModal, setShowCreateFamilyModal] = useState(false);
+  const [showOccurrenceModal, setShowOccurrenceModal] = useState(false);
   const [fullFamilies, setFullFamilies] = useState<FullSmallFamily[]>([]);
   const [fullFamiliesLoading, setFullFamiliesLoading] = useState(false);
   const [showViewFamilyModal, setShowViewFamilyModal] = useState(false);
@@ -269,7 +271,7 @@ export default function PequenasFamilias() {
   const loadOccurrences = async () => {
     setOccurrencesLoading(true);
     try {
-      const response = await api.get('/occurrences');
+      const response = await api.get('/occurrences?ministry_id=pequenas_familias');
       setOccurrences(response.data.occurrences || []);
     } catch (error) {
       Swal.fire({
@@ -306,6 +308,10 @@ export default function PequenasFamilias() {
     loadFamilies();
     loadStatistics();
     loadFullFamilies();
+  };
+
+  const handleOccurrenceSuccess = () => {
+    loadOccurrences();
   };
 
   const handleViewFamily = (family: FullSmallFamily) => {
@@ -422,6 +428,10 @@ export default function PequenasFamilias() {
 
   return (
     <div className="diaconia-page">
+      <div className="diaconia-ministry-leaders-card">
+        <MinistryLeaders ministryId="pequenas_familias" showTitle={true} />
+      </div>
+
       <div className="diaconia-stats-card">
         <h3>Líderes de Pequenas Famílias - ICF Aparecida</h3>
         <div className="stats-grid">
@@ -453,10 +463,6 @@ export default function PequenasFamilias() {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="diaconia-ministry-leaders-card">
-        <MinistryLeaders ministryId="pequenas_familias" showTitle={true} />
       </div>
 
       {canCreateSmallFamily && (
@@ -542,10 +548,14 @@ export default function PequenasFamilias() {
                 <div className="cult-reports-section">
                   <div className="cult-reports-header">
                     <h3>Relatórios de Pequena Família</h3>
-                    <button className="btn btn-primary" onClick={() => setShowReportModal(true)}>
-                      <FiPlus />
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => setShowReportModal(true)}
+                      icon={<FiPlus />}
+                    >
                       Novo Relatório
-                    </button>
+                    </Button>
                   </div>
 
                   {cultReportsLoading ? (
@@ -576,29 +586,31 @@ export default function PequenasFamilias() {
                                 <td>{report.responsavel || report.ministro}</td>
                                 <td>
                                   <div className="table-actions">
-                                    <button 
-                                      className="btn-action btn-edit"
+                                    <Button
+                                      variant="action-edit"
+                                      size="sm"
                                       disabled={isColaborador}
                                       onClick={() => {
                                         if (isColaborador) return;
                                         setEditingReport(report);
                                         setShowReportModal(true);
                                       }}
+                                      icon={<FiUser />}
                                     >
-                                      <FiUser />
                                       Editar
-                                    </button>
-                                    <button 
-                                      className="btn-action btn-delete"
+                                    </Button>
+                                    <Button
+                                      variant="action-delete"
+                                      size="sm"
                                       disabled={isColaborador}
                                       onClick={() => {
                                         if (isColaborador) return;
                                         handleDeleteReport(report.id);
                                       }}
+                                      icon={<FiTrash2 />}
                                     >
-                                      <FiTrash2 />
                                       Excluir
-                                    </button>
+                                    </Button>
                                   </div>
                                 </td>
                               </tr>
@@ -632,6 +644,14 @@ export default function PequenasFamilias() {
                 <div className="cult-reports-section">
                   <div className="cult-reports-header">
                     <h3>Ocorrências Registradas</h3>
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => setShowOccurrenceModal(true)}
+                      icon={<FiPlus />}
+                    >
+                      Nova Ocorrência
+                    </Button>
                   </div>
 
                   {occurrencesLoading ? (
@@ -664,10 +684,13 @@ export default function PequenasFamilias() {
                                 <td>{occurrence.location}</td>
                                 <td>
                                   <div className="table-actions">
-                                    <button className="btn-action btn-edit">
-                                      <FiUser />
+                                    <Button
+                                      variant="action-edit"
+                                      size="sm"
+                                      icon={<FiUser />}
+                                    >
                                       Ver
-                                    </button>
+                                    </Button>
                                   </div>
                                 </td>
                               </tr>
@@ -832,17 +855,18 @@ export default function PequenasFamilias() {
                     </td>
                     <td>
                       <div className="deacon-actions">
-                        <button
-                          className="btn-icon danger"
-                          title={isColaborador ? 'Sem permissão' : 'Remover'}
+                        <Button
+                          variant="action-delete"
+                          size="sm"
                           disabled={isColaborador}
                           onClick={() => {
                             if (isColaborador) return;
                             handleDeleteFamily(family.id, family.member?.full_name || '');
                           }}
+                          icon={<FiTrash2 />}
                         >
-                          <FiTrash2 />
-                        </button>
+                          Excluir
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -893,6 +917,13 @@ export default function PequenasFamilias() {
           setSelectedFamily(null);
         }}
         family={selectedFamily}
+      />
+
+      <OccurrenceModal
+        isOpen={showOccurrenceModal}
+        onClose={() => setShowOccurrenceModal(false)}
+        onSuccess={handleOccurrenceSuccess}
+        ministryId="pequenas_familias"
       />
 
       {/* Scroll to Top Button */}

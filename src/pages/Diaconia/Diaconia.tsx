@@ -304,7 +304,7 @@ export default function Diaconia() {
   const loadOccurrences = async () => {
     setOccurrencesLoading(true);
     try {
-      const response = await api.get('/occurrences');
+      const response = await api.get('/occurrences?ministry_id=diaconia');
       setOccurrences(response.data.occurrences || []);
     } catch (error) {
       Swal.fire({
@@ -480,6 +480,11 @@ export default function Diaconia() {
 
   return (
     <div className="diaconia-page">
+      {/* Card de Líderes de Ministérios */}
+      <div className="diaconia-ministry-leaders-card">
+        <MinistryLeaders ministryId="diaconia" showTitle={true} />
+      </div>
+
       {/* Card de Estatísticas */}
       <div className="diaconia-stats-card">
         <h3>Irmãos(ãs) Membros da Diaconia - ICF Aparecida</h3>
@@ -512,11 +517,6 @@ export default function Diaconia() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Card de Líderes de Ministérios */}
-      <div className="diaconia-ministry-leaders-card">
-        <MinistryLeaders ministryId="diaconia" showTitle={true} />
       </div>
 
       {/* Sistema de Abas */}
@@ -898,6 +898,7 @@ export default function Diaconia() {
         onClose={handleCloseOccurrenceModal}
         onSuccess={handleOccurrenceSuccess}
         editingOccurrence={editingOccurrence}
+        ministryId="diaconia"
       />
 
       

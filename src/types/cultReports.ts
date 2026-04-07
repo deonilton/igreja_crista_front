@@ -23,7 +23,7 @@ export interface CultReport {
   casal_recepcao_2: string;
   casal_santa_ceia_1: string;
   casal_santa_ceia_2: string;
-  programacao: { descricao: string; horario: string }[];
+  programacao: { descricao: string; horario_inicio: string; horario_termino: string }[];
   ocorrencias_gerais: string;
   responsavel: string;
   created_at: string;
@@ -54,7 +54,7 @@ export interface CultReportFormData {
   casal_recepcao_2: string;
   casal_santa_ceia_1: string;
   casal_santa_ceia_2: string;
-  programacao: { descricao: string; horario: string }[];
+  programacao: { descricao: string; horario_inicio: string; horario_termino: string }[];
   ocorrencias_gerais: string;
   responsavel: string;
 }
