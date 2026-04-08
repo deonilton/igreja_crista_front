@@ -1,11 +1,15 @@
 import { NavLink } from 'react-router-dom';
-import { FiHome, FiUsers, FiLogOut, FiBookOpen, FiHeart, FiSend, FiGift, FiMusic, FiSmile, FiSettings, FiFileText, FiUser } from 'react-icons/fi';
+import { FiHome, FiUsers, FiLogOut, FiBookOpen, FiHeart, FiSend, FiGift, FiMusic, FiSmile, FiSettings, FiFileText, FiUser, FiLock, FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import Swal from '../../utils/swalConfig';
+import ChangePasswordModal from '../ChangePasswordModal';
 import './Sidebar.css';
 
 export default function Sidebar() {
   const { user, logout, hasPermission } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   const getInitials = (name?: string): string => {
     if (!name) return 'A';
@@ -188,18 +192,54 @@ export default function Sidebar() {
 
       <div className="sidebar-footer">
         <div className="sidebar-user">
-          <div className="sidebar-avatar">{getInitials(user?.name)}</div>
-          <div className="sidebar-user-info">
-            <div className="sidebar-user-name">{getDisplayName(user?.name)}</div>
-            {/* <div className="sidebar-user-role">{user?.role || 'admin'}</div> */}
+          <div className="sidebar-user-menu-container">
+            <button
+              className="sidebar-user-button"
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              title="Menu do usuário"
+            >
+              <div className="sidebar-avatar">{getInitials(user?.name)}</div>
+              <div className="sidebar-user-info">
+                <div className="sidebar-user-name">{getDisplayName(user?.name)}</div>
+              </div>
+              <div className="sidebar-user-chevron">
+                {showUserMenu ? <FiChevronUp /> : <FiChevronDown />}
+              </div>
+            </button>
+
+            {showUserMenu && (
+              <div className="user-dropdown-menu">
+                <button
+                  className="user-dropdown-item"
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    setShowChangePasswordModal(true);
+                  }}
+                >
+                  <FiLock />
+                  <span>Alterar Senha</span>
+                </button>
+                <div className="user-dropdown-divider" />
+                <button
+                  className="user-dropdown-item"
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    handleLogoutClick();
+                  }}
+                >
+                  <FiLogOut />
+                  <span>Sair</span>
+                </button>
+              </div>
+            )}
           </div>
-          <button onClick={handleLogoutClick} className="btn btn-secondary" title="Sair">
-            <FiLogOut />
-            <span>Sair</span>
-          </button>
         </div>
       </div>
 
+      <ChangePasswordModal
+        isOpen={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
+      />
     </aside>
   );
 }
