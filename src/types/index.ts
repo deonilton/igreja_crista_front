@@ -70,6 +70,14 @@ export interface DashboardStats {
   recentRegistrations: number;
 }
 
+export interface AgeRangeStats {
+  children: number;
+  teenagers: number;
+  youngAdults: number;
+  adults: number;
+  elderly: number;
+}
+
 export interface GenderStat {
   gender: string;
   total: number;
