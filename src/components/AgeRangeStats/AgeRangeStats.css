@@ -1,0 +1,136 @@
+.age-range-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.age-range-card {
+  background: #ffffff !important;
+  border: 2px solid #5da14d;
+  border-radius: 14px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 150ms ease;
+  animation: slideUp 0.4s ease backwards;
+  text-decoration: none;
+  color: #0f172a;
+  box-shadow: 0 2px 8px rgba(93, 161, 77, 0.15);
+}
+
+.age-range-card:hover {
+  box-shadow: 0 6px 16px rgba(93, 161, 77, 0.25);
+  transform: translateY(-2px);
+  border-color: #4a8c3a;
+  text-decoration: none;
+  color: #0f172a;
+}
+
+.age-range-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  background: rgba(93, 161, 77, 0.1);
+  color: #5da14d;
+}
+
+.age-range-icon.info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.age-range-icon.purple {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+.age-range-icon.primary {
+  background: rgba(93, 161, 77, 0.1);
+  color: #5da14d;
+}
+
+.age-range-icon.success {
+  background: rgba(93, 161, 77, 0.15);
+  color: #4a8c3a;
+}
+
+.age-range-icon.danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.age-range-info h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.age-range-info p {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.age-range-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  gap: 10px;
+}
+
+.age-range-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #dc2626;
+  gap: 12px;
+}
+
+.age-range-error button {
+  padding: 8px 16px;
+  background: #5da14d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background 150ms ease;
+}
+
+.age-range-error button:hover {
+  background: #4a8c3a;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -4,6 +4,7 @@ import { FiUsers, FiUserCheck, FiUserX, FiEye, FiStar } from 'react-icons/fi';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import type { DashboardData, DashboardStats } from '../../types';
+import AgeRangeStats from '../../components/AgeRangeStats';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -133,6 +134,11 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      <div className="dashboard-section-title">
+        <h2>Estatísticas por Faixa Etária</h2>
+      </div>
+      <AgeRangeStats />
 
       <div className="dashboard-section-title">
         <h2>Painel de Ministérios  - ICF Aparecida </h2>
