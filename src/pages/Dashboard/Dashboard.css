@@ -218,7 +218,7 @@
 /* Ministries Grid */
 .ministries-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 320px));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 20px;
   animation: slideUp 0.5s ease backwards;
   animation-delay: 400ms;
@@ -274,14 +274,35 @@
   padding: 20px;
   min-height: 100px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+}
+
+.ministry-link-text {
+  color: #5da14d;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0;
 }
 
 .ministry-content p {
   color: var(--text-secondary);
   font-size: 0.85rem;
   font-style: italic;
+}
+
+.ministry-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.ministry-card:hover .ministry-logo {
+  opacity: 1;
 }
 
 .ministry-content-table {

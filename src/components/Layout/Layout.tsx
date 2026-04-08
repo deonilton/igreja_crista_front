@@ -8,7 +8,7 @@ const pageTitles: Record<string, string> = {
   '/membros/novo': 'Novo Membro',
   '/usuarios': 'Usuários',
   '/pequenas-familias': 'Pequenas Famílias',
-  '/evangelismo': 'Evangelismo',
+  '/evangelismo': 'Evangelismo e Missões - Casa de Paz',
   '/diaconia': 'Diaconia',
   '/louvor': 'Louvor',
   '/ministerio-infantil': 'Ministério Infantil',

@@ -80,7 +80,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
       <div className="dashboard-section-title">
-        <h2>Estatísticas</h2>
+        <h2>Estatísticas Flutuantes - ICF Aparecida</h2>
       </div>
       <div className="stats-grid">
         <div className="stat-card">
@@ -135,7 +135,7 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-section-title">
-        <h2>Ministérios</h2>
+        <h2>Painel de Ministérios  - ICF Aparecida </h2>
       </div>
       <div className="ministries-grid">
         {ministries
@@ -146,7 +146,12 @@ export default function Dashboard() {
                 <h3>{ministry.title}</h3>
               </div>
               <div className="ministry-content">
-                <p>Ver detalhes →</p>
+                <img 
+                  src="/imagen/icf_logo.png" 
+                  alt="ICF Logo" 
+                  className="ministry-logo"
+                />
+                <p className="ministry-link-text">Ver detalhes →</p>
               </div>
             </Link>
           ))}

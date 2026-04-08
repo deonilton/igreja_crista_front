@@ -19,11 +19,7 @@ export default function Sidebar() {
 
   const getDisplayName = (name?: string): string => {
     if (!name) return 'Admin';
-    const nameParts = name.trim().split(' ');
-    if (nameParts.length >= 2) {
-      return `${nameParts[0]} ${nameParts[1]}`;
-    }
-    return nameParts[0];
+    return name.trim().split(' ')[0];
   };
 
   const canAccessUsers = hasPermission('usuarios');
@@ -195,9 +191,9 @@ export default function Sidebar() {
           <div className="sidebar-avatar">{getInitials(user?.name)}</div>
           <div className="sidebar-user-info">
             <div className="sidebar-user-name">{getDisplayName(user?.name)}</div>
-            <div className="sidebar-user-role">{user?.role || 'admin'}</div>
+            {/* <div className="sidebar-user-role">{user?.role || 'admin'}</div> */}
           </div>
-          <button onClick={handleLogoutClick} className="sidebar-logout-btn" title="Sair">
+          <button onClick={handleLogoutClick} className="btn btn-secondary" title="Sair">
             <FiLogOut />
             <span>Sair</span>
           </button>
