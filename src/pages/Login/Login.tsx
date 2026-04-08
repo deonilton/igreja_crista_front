@@ -51,10 +51,10 @@ export default function Login() {
         {/* Seção da Imagem */}
         <div className="login-image-section">
           {/* Logo da Igreja */}
-          <img src="/imagen/icf_logo.png" alt="Igreja Cristã Familiar" className="login-image" />
+          <img src="/imagen/icf_logo.png" alt="Igreja Cristã da Família" className="login-image" />
           
-          <h2>Igreja Cristã Familiar</h2>
-          <p>Bem-vindo ao nosso sistema de gestão</p>
+          <h2>Igreja Cristã da Família</h2>
+          <p>Bem-vindo ao nosso sistema de gestão Administrativo</p>
         </div>
 
         {/* Seção do Formulário */}

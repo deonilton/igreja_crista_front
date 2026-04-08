@@ -24,12 +24,12 @@ export default function MembersTable({
     {
       key: 'full_name',
       label: 'Nome',
-      render: (_, row) => (
-        <>
-          <div className="dt-primary">{row.full_name}</div>
-          {row.email && <div className="dt-secondary">{row.email}</div>}
-        </>
-      ),
+    },
+    {
+      key: 'email',
+      label: 'Email',
+      render: (_, row) => row.email || '—',
+      hideOnMobile: true,
     },
     {
       key: 'phone',
@@ -84,8 +84,8 @@ export default function MembersTable({
     : baseColumns;
 
   const gridTemplateColumns = canManageMembers
-    ? 'minmax(200px, 2fr) minmax(120px, 1fr) 100px 150px 100px'
-    : 'minmax(200px, 2fr) minmax(120px, 1fr) 100px 150px';
+    ? 'minmax(160px, 1.5fr) minmax(220px, 2fr) minmax(120px, 1fr) 100px minmax(160px, 1.2fr) 100px'
+    : 'minmax(160px, 1.5fr) minmax(220px, 2fr) minmax(120px, 1fr) 100px minmax(160px, 1.2fr)';
 
   return (
     <DataTable<Member>
