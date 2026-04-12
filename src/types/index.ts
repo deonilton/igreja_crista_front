@@ -14,7 +14,7 @@ export interface AuthContextData {
   user: User | null;
   loading: boolean;
   signed: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => void;
   hasPermission: (resource: PermissionResource, ministry?: string) => boolean;
   hasMinistryAccess: (ministry: string) => boolean;
