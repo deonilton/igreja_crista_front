@@ -1,0 +1,56 @@
+.small-family-report-content {
+  width: 100%;
+}
+
+.small-family-top-section {
+  align-items: flex-start;
+}
+
+.small-family-family-field {
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.small-family-select {
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: #1f2937;
+  border: none;
+  border-bottom: 1.5px solid #d1d5db;
+  border-radius: 0;
+  padding: 8px 4px;
+  background: transparent;
+  outline: none;
+  transition: border-color 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.small-family-select:focus {
+  border-bottom-color: #374151;
+}
+
+.small-family-offering-row {
+  grid-template-columns: 1fr;
+}
+
+.small-family-offering-field {
+  max-width: 240px;
+}
+
+.small-family-offering-field .inp-num {
+  width: 100%;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .small-family-family-field {
+    min-width: 100%;
+  }
+
+  .small-family-offering-field {
+    max-width: 100%;
+  }
+}

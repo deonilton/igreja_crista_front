@@ -2,8 +2,7 @@ import { useState, useEffect, FormEvent, ChangeEvent, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiPlus, FiUsers, FiX } from 'react-icons/fi';
 import type { DataTableEmptyState } from '../../components/DataTable';
-import { toast } from 'react-toastify';
-import Swal from '../../utils/swalConfig';
+import Swal, { showSuccess, showError } from '../../utils/swalConfig';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import type { Member, MembersResponse } from '../../types';
@@ -92,7 +91,7 @@ export default function Members() {
         setTotalPages(response.data.totalPages);
       })
       .catch(err => {
-        toast.error('Erro ao carregar membros.');
+        void showError('Erro ao carregar membros.');
       })
       .finally(() => {
         if (!useDebounce) {
@@ -157,10 +156,10 @@ export default function Members() {
 
     try {
       await api.delete(`/members/${id}`);
-      toast.success('Membro excluído com sucesso!');
+      await showSuccess('Membro excluído com sucesso!');
       setMembers(members.filter((m) => m.id !== id));
     } catch (err) {
-      toast.error('Erro ao excluir membro.');
+      void showError('Erro ao excluir membro.');
     }
   };
 

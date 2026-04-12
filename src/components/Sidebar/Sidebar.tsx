@@ -1,11 +1,16 @@
 import { NavLink } from 'react-router-dom';
-import { FiHome, FiUsers, FiLogOut, FiBookOpen, FiHeart, FiSend, FiGift, FiMusic, FiSmile, FiSettings, FiFileText, FiUser } from 'react-icons/fi';
+import { FiHome, FiUsers, FiLogOut, FiSettings, FiUser, FiLock, FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { MINISTRY_NAV_ITEMS } from '../../config/ministryNav';
 import Swal from '../../utils/swalConfig';
+import ChangePasswordModal from '../ChangePasswordModal';
 import './Sidebar.css';
 
 export default function Sidebar() {
   const { user, logout, hasPermission } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   const getInitials = (name?: string): string => {
     if (!name) return 'A';
@@ -19,27 +24,18 @@ export default function Sidebar() {
 
   const getDisplayName = (name?: string): string => {
     if (!name) return 'Admin';
-    const nameParts = name.trim().split(' ');
-    if (nameParts.length >= 2) {
-      return `${nameParts[0]} ${nameParts[1]}`;
-    }
-    return nameParts[0];
+    return name.trim().split(' ')[0];
   };
 
   const canAccessUsers = hasPermission('usuarios');
   const canAccessPastoralRoom = hasPermission('pastoral_room');
-  const canAccessDiaconia = hasPermission('ministerios', 'diaconia');
-  const canAccessPequenasFamilias = hasPermission('ministerios', 'pequenas_familias');
-  const canAccessEvangelismo = hasPermission('ministerios', 'evangelismo');
-  const canAccessLouvor = hasPermission('ministerios', 'louvor');
-  const canAccessMinisterioInfantil = hasPermission('ministerios', 'ministerio_infantil');
+  const canAccessMembros = hasPermission('membros');
 
-  const hasAnyMinistryAccess =
-    canAccessPequenasFamilias ||
-    canAccessEvangelismo ||
-    canAccessDiaconia ||
-    canAccessLouvor ||
-    canAccessMinisterioInfantil;
+  const visibleMinistryNavItems = MINISTRY_NAV_ITEMS.filter((item) =>
+    hasPermission('ministerios', item.id)
+  );
+
+  const hasAnyMinistryAccess = visibleMinistryNavItems.length > 0;
 
   const handleLogoutClick = async () => {
     const result = await Swal.fire({
@@ -65,11 +61,11 @@ export default function Sidebar() {
       <div className="sidebar-header">
         <div className="sidebar-brand">
           <div className="sidebar-brand-icon">
-            <FiBookOpen />
+            <img src="/imagen/icf_logo.png" alt="Logo ICF" className="sidebar-logo-img" />
           </div>
           <div className="sidebar-brand-text">
-            <h2>Igreja Cristã</h2>
-            <span>Painel Admin</span>
+            <h2>ICF - Aparecida</h2>
+            <span>Painel Administrativo</span>
           </div>
         </div>
       </div>
@@ -88,15 +84,17 @@ export default function Sidebar() {
           Dashboard 
         </NavLink>
 
-        <NavLink
-          to="/membros"
-          className={({ isActive }) =>
-            `sidebar-link ${isActive ? 'active' : ''}`
-          }
-        >
-          <span className="sidebar-link-icon"><FiUsers /></span>
-          Membros
-        </NavLink>
+        {canAccessMembros && (
+          <NavLink
+            to="/membros"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'active' : ''}`
+            }
+          >
+            <span className="sidebar-link-icon"><FiUsers /></span>
+            Membros
+          </NavLink>
+        )}
 
         {canAccessPastoralRoom && (
           <NavLink
@@ -129,81 +127,73 @@ export default function Sidebar() {
           <span className="sidebar-section-title">Ministérios</span>
         )}
 
-        {canAccessPequenasFamilias && (
-          <NavLink
-            to="/pequenas-familias"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiHeart /></span>
-            Pequenas Famílias
-          </NavLink>
-        )}
-
-        {canAccessEvangelismo && (
-          <NavLink
-            to="/evangelismo"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiSend /></span>
-            Evangelismo e Missões
-          </NavLink>
-        )}
-
-        {canAccessDiaconia && (
-          <NavLink
-            to="/diaconia"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiGift /></span>
-            Diaconia
-          </NavLink>
-        )}
-
-        {canAccessLouvor && (
-          <NavLink
-            to="/louvor"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiMusic /></span>
-            Louvor
-          </NavLink>
-        )}
-
-        {canAccessMinisterioInfantil && (
-          <NavLink
-            to="/ministerio-infantil"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiSmile /></span>
-            Ministério Infantil
-          </NavLink>
-        )}
+        {visibleMinistryNavItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.id}
+              to={item.to}
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <span className="sidebar-link-icon"><Icon /></span>
+              {item.label}
+            </NavLink>
+          );
+        })}
       </nav>
 
       <div className="sidebar-footer">
         <div className="sidebar-user">
-          <div className="sidebar-avatar">{getInitials(user?.name)}</div>
-          <div className="sidebar-user-info">
-            <div className="sidebar-user-name">{getDisplayName(user?.name)}</div>
-            <div className="sidebar-user-role">{user?.role || 'admin'}</div>
+          <div className="sidebar-user-menu-container">
+            <button
+              className="sidebar-user-button"
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              title="Menu do usuário"
+            >
+              <div className="sidebar-avatar">{getInitials(user?.name)}</div>
+              <div className="sidebar-user-info">
+                <div className="sidebar-user-name">{getDisplayName(user?.name)}</div>
+              </div>
+              <div className="sidebar-user-chevron">
+                {showUserMenu ? <FiChevronUp /> : <FiChevronDown />}
+              </div>
+            </button>
+
+            {showUserMenu && (
+              <div className="user-dropdown-menu">
+                <button
+                  className="user-dropdown-item"
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    setShowChangePasswordModal(true);
+                  }}
+                >
+                  <FiLock />
+                  <span>Alterar Senha</span>
+                </button>
+                <div className="user-dropdown-divider" />
+                <button
+                  className="user-dropdown-item"
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    handleLogoutClick();
+                  }}
+                >
+                  <FiLogOut />
+                  <span>Sair</span>
+                </button>
+              </div>
+            )}
           </div>
-          <button onClick={handleLogoutClick} className="sidebar-logout-btn" title="Sair">
-            <FiLogOut />
-            <span>Sair</span>
-          </button>
         </div>
       </div>
 
+      <ChangePasswordModal
+        isOpen={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
+      />
     </aside>
   );
 }

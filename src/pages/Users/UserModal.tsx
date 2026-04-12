@@ -17,10 +17,16 @@ interface User {
 
 interface UserModalProps {
   user: User | null;
+  /** Lista atual para detectar e-mail já cadastrado e atualizar em vez de criar duplicata. */
+  existingUsers?: User[];
   onClose: () => void;
 }
 
-export default function UserModal({ user, onClose }: UserModalProps) {
+function normalizeEmail(value: string | undefined | null): string {
+  return (value || '').trim().toLowerCase();
+}
+
+export default function UserModal({ user, existingUsers = [], onClose }: UserModalProps) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [memberSearch, setMemberSearch] = useState('');
@@ -30,6 +36,8 @@ export default function UserModal({ user, onClose }: UserModalProps) {
   const [searchLoading, setSearchLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Quando "Novo usuário" mas o e-mail já existe: gravamos com PUT neste id. */
+  const [matchedExistingUser, setMatchedExistingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -49,6 +57,7 @@ export default function UserModal({ user, onClose }: UserModalProps) {
 
   useEffect(() => {
     if (user) {
+      setMatchedExistingUser(null);
       setFormData({
         name: user.name,
         email: user.email,
@@ -58,6 +67,31 @@ export default function UserModal({ user, onClose }: UserModalProps) {
       });
     }
   }, [user]);
+
+  // E-mail digitado manualmente (sem buscar membro): detecta usuário existente para permitir novos ministérios
+  useEffect(() => {
+    if (user || selectedMember) {
+      return;
+    }
+    const handle = setTimeout(() => {
+      const email = normalizeEmail(formData.email);
+      if (!email || email.length < 3 || !existingUsers.length) {
+        setMatchedExistingUser(null);
+        return;
+      }
+      const match = existingUsers.find((u) => normalizeEmail(u.email) === email) || null;
+      setMatchedExistingUser(match);
+      if (match) {
+        setFormData((fd) => ({
+          ...fd,
+          name: match.name,
+          role: match.role,
+          ministries: [...(match.ministries || [])],
+        }));
+      }
+    }, 450);
+    return () => clearTimeout(handle);
+  }, [formData.email, existingUsers, user, selectedMember]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -116,10 +150,23 @@ export default function UserModal({ user, onClose }: UserModalProps) {
 
   function handleMemberSelect(member: Member) {
     setSelectedMember(member);
-    setFormData(prev => ({
+    const email = member.email || '';
+    const match =
+      email && existingUsers.length
+        ? existingUsers.find((u) => normalizeEmail(u.email) === normalizeEmail(email)) || null
+        : null;
+    setMatchedExistingUser(match);
+    setFormData((prev) => ({
       ...prev,
       name: member.full_name,
-      email: member.email || ''
+      email,
+      ...(match
+        ? {
+            role: match.role,
+            ministries: [...(match.ministries || [])],
+            password: '',
+          }
+        : {}),
     }));
     setMemberSearch('');
     setSearchResults([]);
@@ -128,10 +175,11 @@ export default function UserModal({ user, onClose }: UserModalProps) {
 
   function clearSelectedMember() {
     setSelectedMember(null);
-    setFormData(prev => ({
+    setMatchedExistingUser(null);
+    setFormData((prev) => ({
       ...prev,
       name: '',
-      email: ''
+      email: '',
     }));
   }
 
@@ -153,13 +201,17 @@ export default function UserModal({ user, onClose }: UserModalProps) {
     e.preventDefault();
     setLoading(true);
 
+    const updateUserId = user?.id ?? matchedExistingUser?.id;
+
     try {
-      if (user) {
-        // Atualizar
-        await api.put(`/users/${user.id}`, formData);
-        showSuccess('Usuário atualizado com sucesso!');
+      if (updateUserId) {
+        await api.put(`/users/${updateUserId}`, formData);
+        showSuccess(
+          user
+            ? 'Usuário atualizado com sucesso!'
+            : 'Usuário já existia: ministérios e permissões foram atualizados.'
+        );
       } else {
-        // Criar
         if (!formData.password || formData.password.length < 6) {
           showError('Senha deve ter no mínimo 6 caracteres');
           setLoading(false);
@@ -182,7 +234,11 @@ export default function UserModal({ user, onClose }: UserModalProps) {
         Cancelar
       </button>
       <button type="submit" form="user-form" className="btn btn-primary btn-md" disabled={loading}>
-        {loading ? 'Salvando...' : user ? 'Atualizar' : 'Cadastrar'}
+        {loading
+          ? 'Salvando...'
+          : user || matchedExistingUser
+            ? 'Atualizar'
+            : 'Cadastrar'}
       </button>
     </>
   );
@@ -191,11 +247,23 @@ export default function UserModal({ user, onClose }: UserModalProps) {
     <Modal
       isOpen={true}
       onClose={onClose}
-      title={user ? 'Editar Usuário' : 'Novo Usuário'}
+      title={
+        user ? 'Editar Usuário' : matchedExistingUser ? 'Atualizar usuário existente' : 'Novo Usuário'
+      }
       footer={footer}
       maxWidth="700px"
     >
       <form id="user-form" className="user-modal-form" onSubmit={handleSubmit}>
+          {!user && matchedExistingUser && (
+            <div className="user-modal-existing-banner" role="status">
+              <p>
+                Este e-mail já possui usuário no sistema. Marque os ministérios adicionais (ou ajuste o
+                perfil) e salve para <strong>atualizar</strong> o cadastro — não será criada uma conta
+                duplicada.
+              </p>
+            </div>
+          )}
+
           {!user && (
             <div className="form-group">
               <label>Buscar Membro Existente</label>
@@ -300,7 +368,9 @@ export default function UserModal({ user, onClose }: UserModalProps) {
 
           <div className="form-group">
             <label htmlFor="password">
-              {user ? 'Nova Senha (deixe em branco para não alterar)' : 'Senha *'}
+              {user || matchedExistingUser
+                ? 'Nova Senha (deixe em branco para não alterar)'
+                : 'Senha *'}
             </label>
             <div className="password-input-wrapper">
               <input
@@ -308,11 +378,15 @@ export default function UserModal({ user, onClose }: UserModalProps) {
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 className="form-input"
-                placeholder={user ? 'Deixe em branco para manter a atual' : 'Mínimo 6 caracteres'}
+                placeholder={
+                  user || matchedExistingUser
+                    ? 'Deixe em branco para manter a atual'
+                    : 'Mínimo 6 caracteres'
+                }
                 value={formData.password}
                 onChange={handleChange}
-                required={!user}
-                minLength={user ? 0 : 6}
+                required={!user && !matchedExistingUser}
+                minLength={user || matchedExistingUser ? 0 : 6}
               />
               <button
                 type="button"

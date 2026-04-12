@@ -1,7 +1,6 @@
 import { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { FiPlus, FiTrash2, FiUsers, FiX, FiSearch, FiUser, FiUserCheck, FiFileText, FiAlertCircle, FiCalendar, FiHome, FiArrowUp } from 'react-icons/fi';
-import { toast } from 'react-toastify';
-import Swal from '../../utils/swalConfig';
+import Swal, { showSuccess, showError, showWarning } from '../../utils/swalConfig';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import type { SmallFamily, SmallFamiliesResponse, MemberSearchResult, FullSmallFamily } from '../../types/smallFamilies';
@@ -142,7 +141,7 @@ export default function PequenasFamilias() {
         setTotalPages(response.data.totalPages);
       })
       .catch(err => {
-        toast.error('Erro ao carregar pequenas famílias.');
+        void showError('Erro ao carregar pequenas famílias.');
       })
       .finally(() => {
         setLoading(false);
@@ -151,13 +150,13 @@ export default function PequenasFamilias() {
 
   const handleAddFamily = async () => {
     if (!selectedMember) {
-      toast.error('Selecione um membro para adicionar como líder de pequena família.');
+      void showError('Selecione um membro para adicionar como líder de pequena família.');
       return;
     }
 
     try {
       await api.post('/small-families', { member_id: selectedMember.id });
-      toast.success('Líder de pequena família adicionado com sucesso!');
+      await showSuccess('Líder de pequena família adicionado com sucesso!');
       setSelectedMember(null);
       setSearchQuery('');
       setSearchResults([]);
@@ -166,22 +165,15 @@ export default function PequenasFamilias() {
       loadFamilies();
     } catch (error: any) {
       if (error.response?.status === 409) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Atenção!',
-          text: 'Este membro já é um líder de pequena família.',
-          background: '#f9fafb',
-          confirmButtonColor: '#3b82f6'
-        }).then(() => {
-          setSelectedMember(null);
-          setSearchQuery('');
-          setSearchResults([]);
-          setShowSearchResults(false);
-        });
+        await showWarning('Este membro já é um líder de pequena família.', 'Atenção!');
+        setSelectedMember(null);
+        setSearchQuery('');
+        setSearchResults([]);
+        setShowSearchResults(false);
       } else if (error.response?.status === 404) {
-        toast.error('Membro não encontrado.');
+        void showError('Membro não encontrado.');
       } else {
-        toast.error('Erro ao adicionar líder de pequena família.');
+        void showError('Erro ao adicionar líder de pequena família.');
       }
     }
   };
@@ -199,13 +191,13 @@ export default function PequenasFamilias() {
 
   const handleSaveEdit = async () => {
     if (!editingFamily || !selectedMember) {
-      toast.error('Selecione um membro para atualizar.');
+      void showError('Selecione um membro para atualizar.');
       return;
     }
 
     try {
       await api.put(`/small-families/${editingFamily.id}`, { member_id: selectedMember.id });
-      toast.success('Líder de pequena família atualizado com sucesso!');
+      await showSuccess('Líder de pequena família atualizado com sucesso!');
       setEditingFamily(null);
       setSelectedMember(null);
       setSearchQuery('');
@@ -214,11 +206,11 @@ export default function PequenasFamilias() {
       loadFamilies();
     } catch (error: any) {
       if (error.response?.status === 409) {
-        toast.error('Este membro já é um líder de pequena família.');
+        void showWarning('Este membro já é um líder de pequena família.', 'Atenção!');
       } else if (error.response?.status === 404) {
-        toast.error('Membro não encontrado.');
+        void showError('Membro não encontrado.');
       } else {
-        toast.error('Erro ao atualizar líder de pequena família.');
+        void showError('Erro ao atualizar líder de pequena família.');
       }
     }
   };
@@ -249,11 +241,11 @@ export default function PequenasFamilias() {
 
     try {
       await api.delete(`/small-families/${id}`);
-      toast.success('Líder removido com sucesso!');
+      await showSuccess('Líder removido com sucesso!');
       loadStatistics();
       loadFamilies();
     } catch (error) {
-      toast.error('Erro ao remover líder.');
+      void showError('Erro ao remover líder.');
     }
   };
 
@@ -323,14 +315,52 @@ export default function PequenasFamilias() {
     setFullFamiliesLoading(true);
     try {
       const response = await api.get('/small-families/full-families');
-      console.log('=== DEBUG LOAD FAMILIES ===');
-      console.log('Famílias recebidas da API:', response.data);
-      console.log('===========================');
       setFullFamilies(response.data);
     } catch (error) {
       console.error('Erro ao carregar Pequenas Famílias:', error);
     } finally {
       setFullFamiliesLoading(false);
+    }
+  };
+
+  const handleDeleteFullFamily = async () => {
+    if (!selectedFamily) return;
+
+    const result = await Swal.fire({
+      title: 'Excluir Pequena Família?',
+      html: `A pequena família <strong>${selectedFamily.name}</strong> será removida permanentemente.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar',
+      background: '#f0f9ff',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await api.delete(`/small-families/full-families/${selectedFamily.id}`);
+      Swal.fire({
+        icon: 'success',
+        title: 'Excluída!',
+        text: 'Pequena Família removida com sucesso.',
+        background: '#f9fafb',
+        confirmButtonColor: '#3b82f6',
+      });
+      setShowViewFamilyModal(false);
+      setSelectedFamily(null);
+      loadFullFamilies();
+    } catch (error) {
+      console.error('Erro ao excluir Pequena Família:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Não foi possível excluir a Pequena Família.',
+        background: '#f9fafb',
+        confirmButtonColor: '#3b82f6',
+      });
     }
   };
 
@@ -917,6 +947,8 @@ export default function PequenasFamilias() {
           setSelectedFamily(null);
         }}
         family={selectedFamily}
+        canManage={canCreateSmallFamily && !isColaborador}
+        onDelete={handleDeleteFullFamily}
       />
 
       <OccurrenceModal

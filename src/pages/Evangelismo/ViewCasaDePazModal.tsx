@@ -1,13 +1,14 @@
-import { FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import Modal from '../../components/Modal';
-import type { FullSmallFamily } from '../../types/smallFamilies';
-import './ViewSmallFamilyModal.css';
+import type { FullCasaDePaz } from '../../types/casaDePaz';
+import './ViewCasaDePazModal.css';
 
-interface ViewSmallFamilyModalProps {
+interface ViewCasaDePazModalProps {
   isOpen: boolean;
   onClose: () => void;
-  family: FullSmallFamily | null;
+  casa: FullCasaDePaz | null;
   canManage?: boolean;
+  onEdit?: () => void;
   onDelete?: () => void;
 }
 
@@ -19,20 +20,27 @@ const weekDayLabels: Record<string, string> = {
   sexta: 'Sexta-feira',
 };
 
-export default function ViewSmallFamilyModal({
+export default function ViewCasaDePazModal({
   isOpen,
   onClose,
-  family,
+  casa,
   canManage = false,
+  onEdit,
   onDelete,
-}: ViewSmallFamilyModalProps) {
-  if (!family) return null;
+}: ViewCasaDePazModalProps) {
+  if (!casa) return null;
 
   const footer = (
     <>
       <button type="button" className="btn btn-secondary btn-md" onClick={onClose}>
         Fechar
       </button>
+      {canManage && onEdit && (
+        <button type="button" className="btn btn-secondary btn-md" onClick={onEdit}>
+          <FiEdit2 style={{ marginRight: 6, verticalAlign: 'middle' }} />
+          Editar
+        </button>
+      )}
       {canManage && onDelete && (
         <button type="button" className="btn btn-danger btn-md" onClick={onDelete}>
           <FiTrash2 style={{ marginRight: 6, verticalAlign: 'middle' }} />
@@ -46,8 +54,8 @@ export default function ViewSmallFamilyModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={family.name}
-      subtitle={`Cadastrada em ${new Date(family.created_at).toLocaleDateString('pt-BR')}`}
+      title={casa.name}
+      subtitle={`Cadastrada em ${new Date(casa.created_at).toLocaleDateString('pt-BR')}`}
       footer={footer}
       maxWidth="800px"
     >
@@ -56,7 +64,7 @@ export default function ViewSmallFamilyModal({
         <div className="view-section">
           <div className="info-row-inline">
             <strong>Responsável:</strong>
-            <span>{family.responsible_name}</span>
+            <span>{casa.responsible_name}</span>
           </div>
         </div>
 
@@ -69,36 +77,36 @@ export default function ViewSmallFamilyModal({
             <div className="info-grid">
               <div className="info-item">
                 <label>CEP</label>
-                <p>{family.cep}</p>
+                <p>{casa.cep}</p>
               </div>
               <div className="info-item">
                 <label>Número</label>
-                <p>{family.number}</p>
+                <p>{casa.number}</p>
               </div>
             </div>
-            {family.street && (
+            {casa.street && (
               <div className="info-item">
                 <label>Rua</label>
-                <p>{family.street}</p>
+                <p>{casa.street}</p>
               </div>
             )}
-            {family.complement && (
+            {casa.complement && (
               <div className="info-item">
                 <label>Complemento</label>
-                <p>{family.complement}</p>
+                <p>{casa.complement}</p>
               </div>
             )}
             <div className="info-grid">
-              {family.neighborhood && (
+              {casa.neighborhood && (
                 <div className="info-item">
                   <label>Bairro</label>
-                  <p>{family.neighborhood}</p>
+                  <p>{casa.neighborhood}</p>
                 </div>
               )}
-              {family.city && (
+              {casa.city && (
                 <div className="info-item">
                   <label>Cidade</label>
-                  <p>{family.city}/{family.state}</p>
+                  <p>{casa.city}/{casa.state}</p>
                 </div>
               )}
             </div>
@@ -114,19 +122,19 @@ export default function ViewSmallFamilyModal({
             <div className="info-grid">
               <div className="info-item">
                 <label>Anfitrião</label>
-                <p>{family.host_name}</p>
+                <p>{casa.host_name}</p>
               </div>
               <div className="info-item">
                 <label>Idade</label>
-                <p>{family.host_age} anos</p>
+                <p>{casa.host_age} anos</p>
               </div>
             </div>
 
-            {family.family_members.length > 0 && (
+            {casa.family_members.length > 0 && (
               <div className="family-members-list">
                 <label>Demais membros da família</label>
                 <div className="members-table">
-                  {family.family_members.map((member, index) => (
+                  {casa.family_members.map((member, index) => (
                     <div key={index} className="member-row">
                       <span className="member-name">{member.name}</span>
                       <span className="member-age">{member.age} anos</span>
@@ -145,13 +153,13 @@ export default function ViewSmallFamilyModal({
           </div>
           <div className="section-body">
             <div className="info-badges">
-              <div className={`info-badge ${family.is_converted ? 'active' : 'inactive'}`}>
+              <div className={`info-badge ${casa.is_converted ? 'active' : 'inactive'}`}>
                 <span className="badge-label">É convertido?</span>
-                <span className="badge-value">{family.is_converted ? 'Sim' : 'Não'}</span>
+                <span className="badge-value">{casa.is_converted ? 'Sim' : 'Não'}</span>
               </div>
-              <div className={`info-badge ${family.has_bible ? 'active' : 'inactive'}`}>
+              <div className={`info-badge ${casa.has_bible ? 'active' : 'inactive'}`}>
                 <span className="badge-label">Possui bíblia em casa?</span>
-                <span className="badge-value">{family.has_bible ? 'Sim' : 'Não'}</span>
+                <span className="badge-value">{casa.has_bible ? 'Sim' : 'Não'}</span>
               </div>
             </div>
           </div>
@@ -164,7 +172,7 @@ export default function ViewSmallFamilyModal({
           </div>
           <div className="section-body">
             <div className="meeting-days">
-              {family.meeting_days.map((day) => (
+              {casa.meeting_days.map((day) => (
                 <span key={day} className="day-badge">
                   {weekDayLabels[day] || day}
                 </span>
