@@ -1,8 +1,9 @@
 import { useState, useEffect, FormEvent } from 'react';
 import api from '../../services/api';
-import type { CasaDePaz } from '../../types/casaDePaz';
+import type { FullCasaDePaz } from '../../types/casaDePaz';
 import Modal from '../../components/Modal';
 import { showWarning, showError } from '../../utils/swalConfig';
+import { localISODate, toDateInputValue } from '../../utils/localDate';
 import '../Diaconia/CultReportModal.css';
 import './EvangelismoReportModal.css';
 
@@ -11,12 +12,12 @@ interface EvangelismoReportModalProps {
   onClose: () => void;
   onSuccess: () => void;
   editingReport?: any | null;
-  casas: CasaDePaz[];
+  casas: FullCasaDePaz[];
 }
 
 const defaultFormData = () => ({
   casa_de_paz_id: 0,
-  cult_date: new Date().toISOString().split('T')[0],
+  cult_date: localISODate(),
   horario_inicio: '',
   horario_termino: '',
   responsavel: '',
@@ -28,6 +29,42 @@ const defaultFormData = () => ({
   offeringAmount: 0,
   observacoes: ''
 });
+
+function formatCepDisplay(cep: string): string {
+  const d = String(cep ?? '').replace(/\D/g, '').slice(0, 8);
+  if (d.length <= 5) return d;
+  return `${d.slice(0, 5)}-${d.slice(5)}`;
+}
+
+/** Monta uma linha de endereço a partir do cadastro da Casa de Paz. */
+function buildEnderecoFromCasa(c: FullCasaDePaz): string {
+  const parts: string[] = [];
+  const street = (c.street ?? '').trim();
+  const number = (c.number ?? '').trim();
+  const line1 = [street, number].filter(Boolean).join(', ');
+  if (line1) parts.push(line1);
+  const comp = (c.complement ?? '').trim();
+  if (comp) parts.push(comp);
+  const cepFmt = formatCepDisplay(c.cep ?? '');
+  const city = (c.city ?? '').trim();
+  const state = (c.state ?? '').trim();
+  const cityState = [city, state].filter(Boolean).join('/');
+  const tail = [cepFmt, cityState].filter(Boolean).join(' · ');
+  if (tail) parts.push(tail);
+  return parts.join(' — ');
+}
+
+/** Anfitrião e demais membros da família cadastrados na Casa de Paz. */
+function buildParticipantesFromCasa(c: FullCasaDePaz): string {
+  const names: string[] = [];
+  const host = (c.host_name ?? '').trim();
+  if (host) names.push(host);
+  for (const m of c.family_members ?? []) {
+    const n = (m.name ?? '').trim();
+    if (n) names.push(n);
+  }
+  return names.join(', ');
+}
 
 export default function EvangelismoReportModal({
   isOpen,
@@ -43,7 +80,7 @@ export default function EvangelismoReportModal({
     if (editingReport) {
       setFormData({
         casa_de_paz_id: editingReport.casa_de_paz_id,
-        cult_date: editingReport.cult_date?.split('T')[0] || '',
+        cult_date: toDateInputValue(editingReport.cult_date),
         horario_inicio: editingReport.horario_inicio || '',
         horario_termino: editingReport.horario_termino || '',
         responsavel: editingReport.responsavel || '',
@@ -61,11 +98,34 @@ export default function EvangelismoReportModal({
   }, [editingReport, isOpen]);
 
   const handleCasaChange = (casaId: number) => {
+    if (!casaId) {
+      setFormData(prev => ({
+        ...prev,
+        casa_de_paz_id: 0,
+        responsavel: '',
+        endereco: '',
+        bairro: '',
+        participantes: '',
+      }));
+      return;
+    }
+
     const selectedCasa = casas.find(c => c.id === casaId);
+    if (!selectedCasa) {
+      setFormData(prev => ({ ...prev, casa_de_paz_id: casaId }));
+      return;
+    }
+
+    const endereco = buildEnderecoFromCasa(selectedCasa);
+    const participantes = buildParticipantesFromCasa(selectedCasa);
+
     setFormData(prev => ({
       ...prev,
       casa_de_paz_id: casaId,
-      responsavel: selectedCasa?.member?.full_name || prev.responsavel
+      responsavel: (selectedCasa.responsible_name ?? '').trim(),
+      endereco,
+      bairro: (selectedCasa.neighborhood ?? '').trim(),
+      participantes,
     }));
   };
 
@@ -140,7 +200,7 @@ export default function EvangelismoReportModal({
                 <option value={0}>Selecione...</option>
                 {casas.map(casa => (
                   <option key={casa.id} value={casa.id}>
-                    {casa.member?.full_name}
+                    {casa.name}
                   </option>
                 ))}
               </select>

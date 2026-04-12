@@ -53,6 +53,7 @@ export default function Evangelismo() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [editingReport, setEditingReport] = useState<any>(null);
   const [showCreateCasaModal, setShowCreateCasaModal] = useState(false);
+  const [casaToEdit, setCasaToEdit] = useState<FullCasaDePaz | null>(null);
   const [showOccurrenceModal, setShowOccurrenceModal] = useState(false);
   const [fullCasas, setFullCasas] = useState<FullCasaDePaz[]>([]);
   const [fullCasasLoading, setFullCasasLoading] = useState(false);
@@ -331,6 +332,59 @@ export default function Evangelismo() {
     }
   };
 
+  const handleDeleteCasa = async () => {
+    if (!selectedCasa) return;
+
+    const result = await Swal.fire({
+      title: 'Excluir Casa de Paz?',
+      html: `A casa <strong>${selectedCasa.name}</strong> será removida. Relatórios de evangelismo vinculados a ela também serão excluídos.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar',
+      background: '#f0f9ff',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await api.delete(`/evangelismo/casas-de-paz/${selectedCasa.id}`);
+      Swal.fire({
+        icon: 'success',
+        title: 'Excluída!',
+        text: 'Casa de Paz removida com sucesso.',
+        background: '#f9fafb',
+        confirmButtonColor: '#3b82f6',
+      });
+      setShowViewCasaModal(false);
+      setSelectedCasa(null);
+      loadFullCasas();
+      if (activeTab === 'relatorio') {
+        loadReports(reportsPage);
+      }
+    } catch (error) {
+      console.error('Erro ao excluir Casa de Paz:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Não foi possível excluir a Casa de Paz.',
+        background: '#f9fafb',
+        confirmButtonColor: '#3b82f6',
+      });
+    }
+  };
+
+  const handleEditCasa = () => {
+    if (!selectedCasa) return;
+    const c = selectedCasa;
+    setShowViewCasaModal(false);
+    setSelectedCasa(null);
+    setCasaToEdit(c);
+    setShowCreateCasaModal(true);
+  };
+
   const handleDeleteReport = async (id: number) => {
     const result = await Swal.fire({
       title: 'Tem certeza?',
@@ -470,7 +524,10 @@ export default function Evangelismo() {
               <Button
                 variant="primary"
                 size="md"
-                onClick={() => setShowCreateCasaModal(true)}
+                onClick={() => {
+                  setCasaToEdit(null);
+                  setShowCreateCasaModal(true);
+                }}
                 icon={<FiPlus />}
               >
                 Criar Casa de Paz
@@ -902,13 +959,17 @@ export default function Evangelismo() {
         }}
         onSuccess={handleReportSuccess}
         editingReport={editingReport}
-        casas={leaders}
+        casas={fullCasas}
       />
 
       <CasaDePazModal
         isOpen={showCreateCasaModal}
-        onClose={() => setShowCreateCasaModal(false)}
+        onClose={() => {
+          setShowCreateCasaModal(false);
+          setCasaToEdit(null);
+        }}
         onSuccess={handleCreateCasaSuccess}
+        editingCasa={casaToEdit}
       />
 
       <ViewCasaDePazModal
@@ -918,6 +979,9 @@ export default function Evangelismo() {
           setSelectedCasa(null);
         }}
         casa={selectedCasa}
+        canManage={canCreateCasaDePaz}
+        onEdit={handleEditCasa}
+        onDelete={handleDeleteCasa}
       />
 
       <OccurrenceModal
