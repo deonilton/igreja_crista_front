@@ -315,14 +315,52 @@ export default function PequenasFamilias() {
     setFullFamiliesLoading(true);
     try {
       const response = await api.get('/small-families/full-families');
-      console.log('=== DEBUG LOAD FAMILIES ===');
-      console.log('Famílias recebidas da API:', response.data);
-      console.log('===========================');
       setFullFamilies(response.data);
     } catch (error) {
       console.error('Erro ao carregar Pequenas Famílias:', error);
     } finally {
       setFullFamiliesLoading(false);
+    }
+  };
+
+  const handleDeleteFullFamily = async () => {
+    if (!selectedFamily) return;
+
+    const result = await Swal.fire({
+      title: 'Excluir Pequena Família?',
+      html: `A pequena família <strong>${selectedFamily.name}</strong> será removida permanentemente.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar',
+      background: '#f0f9ff',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await api.delete(`/small-families/full-families/${selectedFamily.id}`);
+      Swal.fire({
+        icon: 'success',
+        title: 'Excluída!',
+        text: 'Pequena Família removida com sucesso.',
+        background: '#f9fafb',
+        confirmButtonColor: '#3b82f6',
+      });
+      setShowViewFamilyModal(false);
+      setSelectedFamily(null);
+      loadFullFamilies();
+    } catch (error) {
+      console.error('Erro ao excluir Pequena Família:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Não foi possível excluir a Pequena Família.',
+        background: '#f9fafb',
+        confirmButtonColor: '#3b82f6',
+      });
     }
   };
 
@@ -909,6 +947,8 @@ export default function PequenasFamilias() {
           setSelectedFamily(null);
         }}
         family={selectedFamily}
+        canManage={canCreateSmallFamily && !isColaborador}
+        onDelete={handleDeleteFullFamily}
       />
 
       <OccurrenceModal

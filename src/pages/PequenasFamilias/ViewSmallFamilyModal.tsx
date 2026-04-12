@@ -1,4 +1,4 @@
-import { FiX, FiMapPin, FiUser, FiUsers, FiCalendar, FiCheckCircle } from 'react-icons/fi';
+import { FiTrash2 } from 'react-icons/fi';
 import Modal from '../../components/Modal';
 import type { FullSmallFamily } from '../../types/smallFamilies';
 import './ViewSmallFamilyModal.css';
@@ -7,6 +7,8 @@ interface ViewSmallFamilyModalProps {
   isOpen: boolean;
   onClose: () => void;
   family: FullSmallFamily | null;
+  canManage?: boolean;
+  onDelete?: () => void;
 }
 
 const weekDayLabels: Record<string, string> = {
@@ -21,16 +23,24 @@ export default function ViewSmallFamilyModal({
   isOpen,
   onClose,
   family,
+  canManage = false,
+  onDelete,
 }: ViewSmallFamilyModalProps) {
   if (!family) return null;
 
-  // DEBUG: Log dos valores recebidos no frontend
-  console.log('=== DEBUG MODAL FRONTEND ===');
-  console.log('Family:', family);
-  console.log('responsible_name:', family.responsible_name);
-  console.log('is_converted:', family.is_converted, 'Type:', typeof family.is_converted);
-  console.log('has_bible:', family.has_bible, 'Type:', typeof family.has_bible);
-  console.log('===========================');
+  const footer = (
+    <>
+      <button type="button" className="btn btn-secondary btn-md" onClick={onClose}>
+        Fechar
+      </button>
+      {canManage && onDelete && (
+        <button type="button" className="btn btn-danger btn-md" onClick={onDelete}>
+          <FiTrash2 style={{ marginRight: 6, verticalAlign: 'middle' }} />
+          Excluir
+        </button>
+      )}
+    </>
+  );
 
   return (
     <Modal
@@ -38,6 +48,7 @@ export default function ViewSmallFamilyModal({
       onClose={onClose}
       title={family.name}
       subtitle={`Cadastrada em ${new Date(family.created_at).toLocaleDateString('pt-BR')}`}
+      footer={footer}
       maxWidth="800px"
     >
       <div className="view-family-content">
