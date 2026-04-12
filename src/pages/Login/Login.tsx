@@ -4,7 +4,7 @@ import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { AxiosError } from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 import type { ApiError } from '../../types';
-import { showError } from '../../utils/swalConfig';
+import { showError, showLoginWelcome } from '../../utils/swalConfig';
 import './Login.css';
 
 export default function Login() {
@@ -20,7 +20,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await login(email, password);
+      const loggedUser = await login(email, password);
+      await showLoginWelcome(loggedUser.name);
       navigate('/');
     } catch (err) {
       const axiosError = err as AxiosError<ApiError>;
