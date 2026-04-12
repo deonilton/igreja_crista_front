@@ -71,18 +71,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, []);
 
-  async function login(email: string, password: string): Promise<void> {
-    try {
-      const response = await api.post<LoginResponse>('/auth/login', { email, password });
-      const { token, user: userData } = response.data;
+  async function login(email: string, password: string): Promise<User> {
+    const response = await api.post<LoginResponse>('/auth/login', { email, password });
+    const { token, user: userData } = response.data;
 
-      sessionStorage.setItem('@igreja:token', token);
-      sessionStorage.setItem('@igreja:user', JSON.stringify(userData));
-      setUser(userData);
-    } catch (error: any) {
-      // Propagar o erro para ser tratado no componente Login
-      throw error;
-    }
+    sessionStorage.setItem('@igreja:token', token);
+    sessionStorage.setItem('@igreja:user', JSON.stringify(userData));
+    setUser(userData);
+    return userData;
   }
 
   function logout(): void {

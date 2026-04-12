@@ -287,6 +287,19 @@ img {
   padding: 0 !important;
 }
 
+.swal-login-welcome-name {
+  font-weight: 700 !important;
+  color: #111827 !important;
+  font-size: 1.08em !important;
+}
+
+/* Fundo fosco/desfocado só no modal de boas-vindas ao login */
+.swal2-container.swal-login-welcome-overlay.swal2-backdrop-show {
+  background: rgba(17, 24, 39, 0.42) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
 /* Actions Container */
 .swal-actions,
 .swal2-actions {

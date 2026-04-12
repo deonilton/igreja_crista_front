@@ -107,6 +107,38 @@ export const showDeleteConfirm = (
   });
 };
 
+function timeOfDayGreeting(): string {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12) return 'Bom dia';
+  if (h >= 12 && h < 18) return 'Boa tarde';
+  return 'Boa noite';
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/** Boas-vindas após login (SweetAlert2 centralizado pelo tema em index.css). */
+export function showLoginWelcome(userName: string) {
+  const period = timeOfDayGreeting();
+  const safeName = escapeHtml(userName);
+  return Swal.fire({
+    ...baseConfig,
+    customClass: {
+      ...baseConfig.customClass,
+      container: 'swal-login-welcome-overlay',
+    },
+    icon: 'success',
+    title: 'Seja bem-vindo(a)!',
+    html: `${period}, Paz do Senhor, <strong class="swal-login-welcome-name">${safeName}</strong>! Bom trabalho!`,
+    confirmButtonText: 'Obrigado',
+  });
+}
+
 // Helper: Confirmação de Logout
 export const showLogoutConfirm = (message: string) => {
   return Swal.fire({
