@@ -6,13 +6,13 @@ import './PastoralReadReport.css';
 import iframePrintCss from './ViewCasaDePazReportIframePrint.css?raw';
 import { printElementInIframe } from '../../utils/printIframeDocument';
 
-interface ViewSmallFamilyReportModalProps {
+interface ViewCasaDePazReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   report: any;
 }
 
-export default function ViewSmallFamilyReportModal({ isOpen, onClose, report }: ViewSmallFamilyReportModalProps) {
+export default function ViewCasaDePazReportModal({ isOpen, onClose, report }: ViewCasaDePazReportModalProps) {
   const printAreaRef = useRef<HTMLDivElement>(null);
 
   if (!isOpen || !report) return null;
@@ -33,6 +33,11 @@ export default function ViewSmallFamilyReportModal({ isOpen, onClose, report }: 
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value));
   };
 
+  const formatTime = (t: string | null | undefined) => {
+    if (!t) return '-';
+    return t.length >= 5 ? t.slice(0, 5) : t;
+  };
+
   return (
     <div className="modal-overlay pastoral-print-overlay">
       <div className="modal-content cult-report-modal pastoral-print-sheet">
@@ -45,22 +50,28 @@ export default function ViewSmallFamilyReportModal({ isOpen, onClose, report }: 
         <div className="modal-body">
           <div ref={printAreaRef} className="cult-report-content pastoral-read-report">
             <div className="modal-title-section">
-              <h1 className="modal-title">Relatório de Pequena Família</h1>
-              <p className="modal-subtitle">{report.family_name?.trim() || '—'}</p>
-              <p className="modal-source">Origem: Pequenas Famílias</p>
+              <h1 className="modal-title">Relatório de Casa de Paz</h1>
+              <p className="modal-subtitle">{report.casa_name || '-'}</p>
+              <p className="modal-source">Origem: Evangelismo e Missões</p>
             </div>
 
             <div className="topo-section">
               <div className="col-data">
                 <div className="data-row">
-                  <span>Data do culto: {formatDate(report.cult_date)}</span>
+                  <span>Data: {formatDate(report.cult_date)}</span>
+                </div>
+                <div className="data-row">
+                  <span>Início: {formatTime(report.horario_inicio)}</span>
+                </div>
+                <div className="data-row">
+                  <span>Término: {formatTime(report.horario_termino)}</span>
                 </div>
               </div>
             </div>
 
             <hr className="sep" />
 
-            <div className="secao-titulo">Informações da família</div>
+            <div className="secao-titulo">Encontro</div>
             <div className="linha-dupla">
               <div className="campo">
                 <span className="pastoral-field-label">Responsável</span>
@@ -88,11 +99,22 @@ export default function ViewSmallFamilyReportModal({ isOpen, onClose, report }: 
 
             <hr className="sep" />
 
-            <div className="secao-titulo">Oferta</div>
+            <div className="secao-titulo">Números</div>
+            <div className="linha-dupla">
+              <div className="campo">
+                <span className="pastoral-field-label">Novos visitantes</span>
+                <span className="pastoral-field-value">{report.new_visitors ?? 0}</span>
+              </div>
+              <div className="campo">
+                <span className="pastoral-field-label">Conversões</span>
+                <span className="pastoral-field-value">{report.conversions ?? 0}</span>
+              </div>
+            </div>
+
             <div className="linha-dupla linha-dupla--single">
               <div className="campo">
-                <span className="pastoral-field-label">Valor</span>
-                <span className="pastoral-field-value">{formatCurrency(report.offering_amount)}</span>
+                <span className="pastoral-field-label">Oferta</span>
+                <span className="pastoral-field-value">{formatCurrency(report.offeringAmount)}</span>
               </div>
             </div>
 

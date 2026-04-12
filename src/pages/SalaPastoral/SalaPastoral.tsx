@@ -5,7 +5,9 @@ import AconselhamentoAgenda from './AconselhamentoAgenda';
 import ViewReportModal from './ViewReportModal';
 import ViewOccurrenceModal from './ViewOccurrenceModal';
 import ViewSmallFamilyReportModal from './ViewSmallFamilyReportModal';
+import ViewCasaDePazReportModal from './ViewCasaDePazReportModal';
 import api from '../../services/api';
+import { localISODate, apiCivilDateKey } from '../../utils/localDate';
 import './SalaPastoral.css';
 
 interface CultReport {
@@ -37,6 +39,23 @@ interface Occurrence {
   reporter_name: string;
 }
 
+interface EvangelismoReportPastoral {
+  id: number;
+  casa_de_paz_id: number;
+  casa_name: string;
+  cult_date: string;
+  horario_inicio?: string | null;
+  horario_termino?: string | null;
+  responsavel: string;
+  endereco?: string | null;
+  bairro?: string | null;
+  participantes?: string | null;
+  new_visitors: number;
+  conversions: number;
+  offeringAmount: number;
+  observacoes?: string | null;
+}
+
 interface Aconselhamento {
   id: number;
   data: string;
@@ -53,9 +72,11 @@ export default function SalaPastoral() {
   const [cultReports, setCultReports] = useState<CultReport[]>([]);
   const [smallFamilyReports, setSmallFamilyReports] = useState<SmallFamilyReport[]>([]);
   const [occurrences, setOccurrences] = useState<Occurrence[]>([]);
+  const [evangelismoReports, setEvangelismoReports] = useState<EvangelismoReportPastoral[]>([]);
   const [aconselhamentos, setAconselhamentos] = useState<Aconselhamento[]>([]);
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [selectedSmallFamilyReport, setSelectedSmallFamilyReport] = useState<any>(null);
+  const [selectedEvangelismoReport, setSelectedEvangelismoReport] = useState<EvangelismoReportPastoral | null>(null);
   const [selectedOccurrence, setSelectedOccurrence] = useState<any>(null);
   const [selectedMonth, setSelectedMonth] = useState<{key: string, label: string, data: Aconselhamento[]} | null>(null);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(getStartOfWeek(new Date()));
@@ -101,25 +122,30 @@ export default function SalaPastoral() {
 
   // Filtrar eventos por dia
   const getEventsForDay = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
-    
-    const cultReportsForDay = cultReports.filter(r => 
-      r.cult_date?.startsWith(dateStr)
+    const dateStr = localISODate(date);
+
+    const cultReportsForDay = cultReports.filter(r =>
+      apiCivilDateKey(r.cult_date) === dateStr
     );
-    
-    const smallFamilyReportsForDay = smallFamilyReports.filter(r => 
-      r.cult_date?.startsWith(dateStr)
+
+    const smallFamilyReportsForDay = smallFamilyReports.filter(r =>
+      apiCivilDateKey(r.cult_date) === dateStr
     );
-    
-    const occurrencesForDay = occurrences.filter(o => 
-      o.date?.startsWith(dateStr)
+
+    const occurrencesForDay = occurrences.filter(o =>
+      apiCivilDateKey(o.date) === dateStr
+    );
+
+    const evangelismoForDay = evangelismoReports.filter(r =>
+      apiCivilDateKey(r.cult_date) === dateStr
     );
     
     return {
       cultReports: cultReportsForDay,
       smallFamilyReports: smallFamilyReportsForDay,
       occurrences: occurrencesForDay,
-      total: cultReportsForDay.length + smallFamilyReportsForDay.length + occurrencesForDay.length
+      evangelismoReports: evangelismoForDay,
+      total: cultReportsForDay.length + smallFamilyReportsForDay.length + occurrencesForDay.length + evangelismoForDay.length
     };
   };
 
@@ -137,16 +163,16 @@ export default function SalaPastoral() {
 
   const loadData = async () => {
     try {
-      const [cultReportsRes, smallFamilyReportsRes, occurrencesRes, aconselhamentosRes] = await Promise.all([
-        api.get('/cult-reports?page=1&limit=50'),
-        api.get('/small-family-reports?page=1&limit=50'),
-        api.get('/occurrences?page=1&limit=50'),
+      const [pastoralRes, aconselhamentosRes] = await Promise.all([
+        api.get('/pastoral-room'),
         api.get('/aconselhamentos?limit=100')
       ]);
-      
-      setCultReports(cultReportsRes.data.reports || []);
-      setSmallFamilyReports(smallFamilyReportsRes.data.reports || []);
-      setOccurrences(occurrencesRes.data.occurrences || []);
+
+      const data = pastoralRes.data;
+      setCultReports(data.cultReports || []);
+      setSmallFamilyReports(data.smallFamilyReports || []);
+      setOccurrences(data.occurrences || []);
+      setEvangelismoReports(data.evangelismoReports || []);
       setAconselhamentos(aconselhamentosRes.data.appointments || []);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -170,13 +196,13 @@ export default function SalaPastoral() {
     const weekDays = getWeekDays(currentWeekStart);
     const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
     const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-    const today = new Date().toISOString().split('T')[0];
+    const today = localISODate();
 
     return (
       <div className="sala-pastoral">
         <div className="sala-pastoral-header">
           <h1>Relatórios e Ocorrências</h1>
-          <p>Visualize todos os relatórios de culto e ocorrências da igreja</p>
+          <p>Visualize relatórios de culto, pequenas famílias, casas de paz e ocorrências da igreja</p>
         </div>
 
         <button className="pastoral-btn" onClick={() => setShowReports(false)} style={{ marginBottom: '20px' }}>
@@ -200,7 +226,7 @@ export default function SalaPastoral() {
 
           <div className="calendar-days">
             {weekDays.map((day, index) => {
-              const dayStr = day.toISOString().split('T')[0];
+              const dayStr = localISODate(day);
               const events = getEventsForDay(day);
               const isToday = dayStr === today;
 
@@ -231,6 +257,16 @@ export default function SalaPastoral() {
                           >
                             <FiFileText size={12} />
                             <span>Pequena Família</span>
+                          </div>
+                        ))}
+                        {events.evangelismoReports.map(report => (
+                          <div 
+                            key={`casa-paz-${report.id}`} 
+                            className="event-item casa-paz-event"
+                            onClick={() => setSelectedEvangelismoReport(report)}
+                          >
+                            <FiFileText size={12} />
+                            <span>Casa de Paz</span>
                           </div>
                         ))}
                         {events.occurrences.map(occ => (
@@ -330,6 +366,12 @@ export default function SalaPastoral() {
           report={selectedSmallFamilyReport}
         />
 
+        <ViewCasaDePazReportModal
+          isOpen={!!selectedEvangelismoReport}
+          onClose={() => setSelectedEvangelismoReport(null)}
+          report={selectedEvangelismoReport}
+        />
+
         <ViewOccurrenceModal
           isOpen={!!selectedOccurrence}
           onClose={() => setSelectedOccurrence(null)}
@@ -397,7 +439,7 @@ export default function SalaPastoral() {
           </div>
           <div className="pastoral-card-content">
             <h3>Relatórios e Ocorrências</h3>
-            <p>Visualize relatórios de culto e ocorrências registradas</p>
+            <p>Visualize relatórios de culto, casas de paz e ocorrências registradas</p>
             <button className="pastoral-btn">Ver Mais</button>
           </div>
         </div>

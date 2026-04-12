@@ -1,16 +1,35 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
 import { FiPlus, FiTrash2 } from 'react-icons/fi';
 import { showSuccess, showError, showWarning } from '../../utils/swalConfig';
 import api from '../../services/api';
 import Modal from '../../components/Modal';
-import type { CasaDePazFormData, FamilyMember, Leader } from '../../types/casaDePaz';
+import type { CasaDePazFormData, FamilyMember, Leader, FullCasaDePaz } from '../../types/casaDePaz';
 import './CasaDePazModal.css';
 
 interface CasaDePazModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  editingCasa?: FullCasaDePaz | null;
 }
+
+const casaToFormData = (casa: FullCasaDePaz): CasaDePazFormData => ({
+  name: casa.name,
+  responsible_id: casa.responsible_id,
+  cep: String(casa.cep ?? '').replace(/\D/g, ''),
+  street: casa.street ?? '',
+  number: casa.number ?? '',
+  complement: casa.complement ?? '',
+  neighborhood: casa.neighborhood ?? '',
+  city: casa.city ?? '',
+  state: casa.state ?? '',
+  host_name: casa.host_name,
+  host_age: casa.host_age,
+  family_members: (casa.family_members ?? []).map((m) => ({ name: m.name, age: m.age })),
+  is_converted: Boolean(casa.is_converted),
+  has_bible: Boolean(casa.has_bible),
+  meeting_days: [...(casa.meeting_days ?? [])],
+});
 
 const defaultFormData = (): CasaDePazFormData => ({
   name: '',
@@ -30,6 +49,13 @@ const defaultFormData = (): CasaDePazFormData => ({
   meeting_days: [],
 });
 
+/** Exibe CEP como 00000-000; o estado guarda só dígitos (até 8). */
+function formatCepMask(digits: string): string {
+  const d = digits.replace(/\D/g, '').slice(0, 8);
+  if (d.length <= 5) return d;
+  return `${d.slice(0, 5)}-${d.slice(5)}`;
+}
+
 const weekDays = [
   { id: 'segunda', label: 'Segunda-feira' },
   { id: 'terca', label: 'Terça-feira' },
@@ -42,25 +68,32 @@ export default function CasaDePazModal({
   isOpen,
   onClose,
   onSuccess,
+  editingCasa = null,
 }: CasaDePazModalProps) {
   const [formData, setFormData] = useState<CasaDePazFormData>(defaultFormData());
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [leadersLoading, setLeadersLoading] = useState(false);
+  const numberInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      loadLeaders();
+    if (!isOpen) return;
+    loadLeaders();
+    if (editingCasa) {
+      setFormData(casaToFormData(editingCasa));
+    } else {
       setFormData(defaultFormData());
     }
-  }, [isOpen]);
+  }, [isOpen, editingCasa]);
 
   const loadLeaders = async () => {
     setLeadersLoading(true);
     try {
-      const response = await api.get('/evangelismo/leaders');
-      setLeaders(response.data.leaders || []);
+      const response = await api.get('/evangelismo/leaders', {
+        params: { page: 1, limit: 100 },
+      });
+      setLeaders(response.data.casas || []);
     } catch (error) {
       console.error('Erro ao carregar líderes:', error);
     } finally {
@@ -72,33 +105,37 @@ export default function CasaDePazModal({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleCepChange = async (cep: string) => {
-    const cleanedCep = cep.replace(/\D/g, '');
-    handleChange('cep', cleanedCep);
+  const handleCepChange = async (raw: string) => {
+    const cleanedCep = raw.replace(/\D/g, '').slice(0, 8);
+    setFormData(prev => ({ ...prev, cep: cleanedCep }));
 
-    if (cleanedCep.length === 8) {
-      setCepLoading(true);
-      try {
-        const response = await fetch(`https://viacep.com.br/ws/${cleanedCep}/json/`);
-        const data = await response.json();
+    if (cleanedCep.length !== 8) {
+      return;
+    }
 
-        if (!data.erro) {
-          setFormData(prev => ({
-            ...prev,
-            street: data.logradouro || '',
-            neighborhood: data.bairro || '',
-            city: data.localidade || '',
-            state: data.uf || '',
-          }));
-        } else {
-          showWarning('CEP não encontrado');
-        }
-      } catch (error) {
-        console.error('Erro ao buscar CEP:', error);
-        showError('Erro ao buscar CEP');
-      } finally {
-        setCepLoading(false);
+    setCepLoading(true);
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cleanedCep}/json/`);
+      const data = await response.json();
+
+      if (!data.erro) {
+        setFormData(prev => ({
+          ...prev,
+          cep: cleanedCep,
+          street: data.logradouro || '',
+          neighborhood: data.bairro || '',
+          city: data.localidade || '',
+          state: data.uf || '',
+        }));
+        setTimeout(() => numberInputRef.current?.focus(), 0);
+      } else {
+        showWarning('CEP não encontrado');
       }
+    } catch (error) {
+      console.error('Erro ao buscar CEP:', error);
+      showError('Erro ao buscar CEP');
+    } finally {
+      setCepLoading(false);
     }
   };
 
@@ -169,13 +206,21 @@ export default function CasaDePazModal({
 
     setLoading(true);
     try {
-      await api.post('/evangelismo/casas-de-paz', formData);
-      showSuccess('Casa de Paz criada com sucesso!');
+      if (editingCasa) {
+        await api.put(`/evangelismo/casas-de-paz/${editingCasa.id}`, formData);
+        showSuccess('Casa de Paz atualizada com sucesso!');
+      } else {
+        await api.post('/evangelismo/casas-de-paz', formData);
+        showSuccess('Casa de Paz criada com sucesso!');
+      }
       onSuccess();
       onClose();
     } catch (error: any) {
-      console.error('Erro ao criar Casa de Paz:', error);
-      showError(error.response?.data?.error || 'Erro ao criar Casa de Paz');
+      console.error('Erro ao salvar Casa de Paz:', error);
+      showError(
+        error.response?.data?.error ||
+          (editingCasa ? 'Erro ao atualizar Casa de Paz' : 'Erro ao criar Casa de Paz')
+      );
     } finally {
       setLoading(false);
     }
@@ -186,8 +231,8 @@ export default function CasaDePazModal({
       <button type="button" className="btn btn-secondary btn-md" onClick={onClose} disabled={loading}>
         Cancelar
       </button>
-      <button type="submit" form="create-casa-form" className="btn btn-primary btn-md" disabled={loading}>
-        {loading ? 'Salvando...' : 'Criar Casa de Paz'}
+      <button type="submit" form="casa-de-paz-form" className="btn btn-primary btn-md" disabled={loading}>
+        {loading ? 'Salvando...' : editingCasa ? 'Salvar alterações' : 'Criar Casa de Paz'}
       </button>
     </>
   );
@@ -196,12 +241,12 @@ export default function CasaDePazModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Criar Casa de Paz"
-      subtitle="Cadastro de nova Casa de Paz"
+      title={editingCasa ? 'Editar Casa de Paz' : 'Criar Casa de Paz'}
+      subtitle={editingCasa ? 'Altere os dados da Casa de Paz' : 'Cadastro de nova Casa de Paz'}
       footer={footer}
       maxWidth="900px"
     >
-      <form id="create-casa-form" className="create-family-form" onSubmit={handleSubmit}>
+      <form id="casa-de-paz-form" className="create-family-form" onSubmit={handleSubmit}>
         {/* Informações Principais */}
         <div className="form-section">
           <h4 className="section-title">Informações Principais</h4>
@@ -254,8 +299,10 @@ export default function CasaDePazModal({
               <input
                 id="cep"
                 type="text"
+                inputMode="numeric"
+                autoComplete="postal-code"
                 className="form-input"
-                value={formData.cep}
+                value={formatCepMask(formData.cep)}
                 onChange={(e) => handleCepChange(e.target.value)}
                 placeholder="00000-000"
                 maxLength={9}
@@ -268,6 +315,7 @@ export default function CasaDePazModal({
               <label htmlFor="number">Número *</label>
               <input
                 id="number"
+                ref={numberInputRef}
                 type="text"
                 className="form-input"
                 value={formData.number}

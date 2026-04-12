@@ -1,3 +1,4 @@
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import Modal from '../../components/Modal';
 import type { FullCasaDePaz } from '../../types/casaDePaz';
 import './ViewCasaDePazModal.css';
@@ -6,6 +7,9 @@ interface ViewCasaDePazModalProps {
   isOpen: boolean;
   onClose: () => void;
   casa: FullCasaDePaz | null;
+  canManage?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 const weekDayLabels: Record<string, string> = {
@@ -20,8 +24,31 @@ export default function ViewCasaDePazModal({
   isOpen,
   onClose,
   casa,
+  canManage = false,
+  onEdit,
+  onDelete,
 }: ViewCasaDePazModalProps) {
   if (!casa) return null;
+
+  const footer = (
+    <>
+      <button type="button" className="btn btn-secondary btn-md" onClick={onClose}>
+        Fechar
+      </button>
+      {canManage && onEdit && (
+        <button type="button" className="btn btn-secondary btn-md" onClick={onEdit}>
+          <FiEdit2 style={{ marginRight: 6, verticalAlign: 'middle' }} />
+          Editar
+        </button>
+      )}
+      {canManage && onDelete && (
+        <button type="button" className="btn btn-danger btn-md" onClick={onDelete}>
+          <FiTrash2 style={{ marginRight: 6, verticalAlign: 'middle' }} />
+          Excluir
+        </button>
+      )}
+    </>
+  );
 
   return (
     <Modal
@@ -29,6 +56,7 @@ export default function ViewCasaDePazModal({
       onClose={onClose}
       title={casa.name}
       subtitle={`Cadastrada em ${new Date(casa.created_at).toLocaleDateString('pt-BR')}`}
+      footer={footer}
       maxWidth="800px"
     >
       <div className="view-family-content">
