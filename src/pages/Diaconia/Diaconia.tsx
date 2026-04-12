@@ -1,8 +1,7 @@
 import { useState, useEffect, FormEvent, ChangeEvent, useRef } from 'react';
 import { FiPlus, FiTrash2, FiUsers, FiX, FiSearch, FiUser, FiUserCheck, FiFileText, FiAlertCircle, FiCalendar } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import Swal from '../../utils/swalConfig';
+import Swal, { showSuccess, showError, showWarning } from '../../utils/swalConfig';
 import api from '../../services/api';
 import type { Deacon, DeaconsResponse, MemberSearchResult } from '../../types/deacons';
 import Pagination from '../../components/Pagination/Pagination';
@@ -143,7 +142,7 @@ export default function Diaconia() {
         setTotalPages(response.data.totalPages);
       })
       .catch(err => {
-        toast.error('Erro ao carregar diáconos.');
+        void showError('Erro ao carregar diáconos.');
       })
       .finally(() => {
         setLoading(false);
@@ -153,13 +152,13 @@ export default function Diaconia() {
   // Adicionar diácono
   const handleAddDeacon = async () => {
     if (!selectedMember) {
-      toast.error('Selecione um membro para adicionar como diácono.');
+      void showError('Selecione um membro para adicionar como diácono.');
       return;
     }
 
     try {
       await api.post('/deacons', { member_id: selectedMember.id });
-      toast.success('Diácono adicionado com sucesso!');
+      await showSuccess('Diácono adicionado com sucesso!');
       setSelectedMember(null);
       setSearchQuery('');
       setSearchResults([]);
@@ -168,23 +167,15 @@ export default function Diaconia() {
       loadDeacons();
     } catch (error: any) {
       if (error.response?.status === 409) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Atenção!',
-          text: 'Este membro já é um diácono.',
-          background: '#f9fafb',
-          confirmButtonColor: '#3b82f6'
-        }).then(() => {
-          // Limpar campo de pesquisa após fechar o alerta
-          setSelectedMember(null);
-          setSearchQuery('');
-          setSearchResults([]);
-          setShowSearchResults(false);
-        });
+        await showWarning('Este membro já é um diácono.', 'Atenção!');
+        setSelectedMember(null);
+        setSearchQuery('');
+        setSearchResults([]);
+        setShowSearchResults(false);
       } else if (error.response?.status === 404) {
-        toast.error('Membro não encontrado.');
+        void showError('Membro não encontrado.');
       } else {
-        toast.error('Erro ao adicionar diácono.');
+        void showError('Erro ao adicionar diácono.');
       }
     }
   };
@@ -204,13 +195,13 @@ export default function Diaconia() {
   // Salvar edição
   const handleSaveEdit = async () => {
     if (!editingDeacon || !selectedMember) {
-      toast.error('Selecione um membro para atualizar.');
+      void showError('Selecione um membro para atualizar.');
       return;
     }
 
     try {
       await api.put(`/deacons/${editingDeacon.id}`, { member_id: selectedMember.id });
-      toast.success('Diácono atualizado com sucesso!');
+      await showSuccess('Diácono atualizado com sucesso!');
       setEditingDeacon(null);
       setSelectedMember(null);
       setSearchQuery('');
@@ -219,11 +210,11 @@ export default function Diaconia() {
       loadDeacons();
     } catch (error: any) {
       if (error.response?.status === 409) {
-        toast.error('Este membro já é um diácono.');
+        void showWarning('Este membro já é um diácono.', 'Atenção!');
       } else if (error.response?.status === 404) {
-        toast.error('Membro não encontrado.');
+        void showError('Membro não encontrado.');
       } else {
-        toast.error('Erro ao atualizar diácono.');
+        void showError('Erro ao atualizar diácono.');
       }
     }
   };
@@ -256,11 +247,11 @@ export default function Diaconia() {
 
     try {
       await api.delete(`/deacons/${id}`);
-      toast.success('Diácono removido com sucesso!');
+      await showSuccess('Diácono removido com sucesso!');
       loadStatistics();
       loadDeacons();
     } catch (error) {
-      toast.error('Erro ao remover diácono.');
+      void showError('Erro ao remover diácono.');
     }
   };
 

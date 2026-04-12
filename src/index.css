@@ -215,13 +215,6 @@ img {
   to { transform: rotate(360deg); }
 }
 
-/* Toast overrides */
-.Toastify__toast {
-  border-radius: var(--border-radius-md) !important;
-  font-family: 'Oxygen', sans-serif !important;
-  font-size: 0.875rem !important;
-}
-
 /* ============================================
    SweetAlert2 Custom Styles - Professional
    ============================================ */
@@ -321,18 +314,18 @@ img {
   margin: 0 !important;
 }
 
-/* Confirm Button (Primary) */
+/* Confirm Button (Primary — alinhado ao tema indigo/azul do sistema) */
 .swal-confirm-btn,
 .swal2-confirm {
-  background: #111827 !important;
-  color: #FFFFFF !important;
+  background: var(--primary-600) !important;
+  color: #ffffff !important;
 }
 
 .swal-confirm-btn:hover,
 .swal2-confirm:hover {
-  background: #374151 !important;
+  background: var(--primary-700) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35) !important;
 }
 
 .swal-confirm-btn:active,
@@ -340,18 +333,19 @@ img {
   transform: translateY(0) !important;
 }
 
-/* Cancel Button (Secondary) */
+/* Cancel Button (Secondary — contorno azul do tema) */
 .swal-cancel-btn,
 .swal2-cancel {
-  background: #FFFFFF !important;
-  color: #374151 !important;
-  border: 1.5px solid #d1d5db !important;
+  background: #ffffff !important;
+  color: var(--primary-700) !important;
+  border: 1.5px solid var(--primary-400) !important;
 }
 
 .swal-cancel-btn:hover,
 .swal2-cancel:hover {
-  background: #f9fafb !important;
-  border-color: #9ca3af !important;
+  background: var(--primary-50) !important;
+  border-color: var(--primary-600) !important;
+  color: var(--primary-800) !important;
 }
 
 /* Danger Button (Delete/Logout) */
@@ -367,7 +361,7 @@ img {
 
 /* Timer Progress Bar */
 .swal2-timer-progress-bar {
-  background: #111827 !important;
+  background: var(--primary-600) !important;
 }
 
 /* Close Button */

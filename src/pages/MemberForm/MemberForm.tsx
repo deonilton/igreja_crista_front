@@ -1,10 +1,10 @@
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FiSave, FiArrowLeft } from 'react-icons/fi';
-import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
+import { showSuccess, showError, showWarning } from '../../utils/swalConfig';
 import type { MemberFormData, MemberResponse, ApiError } from '../../types';
 import Button from '../../components/Button';
 import './MemberForm.css';
@@ -27,6 +27,27 @@ const initialState: MemberFormData = {
   notes: '',
 };
 
+function isValidEmail(value: string): boolean {
+  const s = value.trim();
+  if (!s) return true;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
+/** Limita a parte do ano a 4 dígitos (formato YYYY-MM-DD ou ano ainda sendo digitado). */
+function sanitizeIsoDateYear(value: string): string {
+  if (!value) return '';
+  const dash = value.indexOf('-');
+  if (dash === -1) {
+    if (value.length > 4 && /^\d+$/.test(value)) {
+      return value.slice(0, 4);
+    }
+    return value;
+  }
+  const year = value.slice(0, dash);
+  if (year.length <= 4) return value;
+  return `${year.slice(0, 4)}${value.slice(dash)}`;
+}
+
 export default function MemberForm() {
   const { user } = useAuth();
   const [form, setForm] = useState<MemberFormData>(initialState);
@@ -41,9 +62,10 @@ export default function MemberForm() {
   // Verificar permissão de edição
   useEffect(() => {
     if (isEditing && user?.role !== 'super_admin') {
-      toast.error('Acesso negado. Apenas Super Admin pode editar membros.');
-      navigate('/membros');
-      return;
+      void (async () => {
+        await showError('Acesso negado. Apenas Super Admin pode editar membros.');
+        navigate('/membros');
+      })();
     }
   }, [isEditing, user, navigate]);
 
@@ -77,11 +99,16 @@ export default function MemberForm() {
         notes: member.notes || '',
       });
     } catch (err) {
-      toast.error('Erro ao carregar dados do membro.');
+      await showError('Erro ao carregar dados do membro.');
       navigate('/membros');
     } finally {
       setLoadingData(false);
     }
+  }
+
+  function handleBirthDateChange(e: FormEvent<HTMLInputElement>): void {
+    const sanitized = sanitizeIsoDateYear(e.currentTarget.value);
+    setForm((prev) => ({ ...prev, birth_date: sanitized }));
   }
 
   function handleChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
@@ -147,11 +174,11 @@ export default function MemberForm() {
           setAddressFromCep(true);
         }
         
-        toast.success('Endereço encontrado e preenchido!');
+        await showSuccess('Endereço encontrado e preenchido!', 'CEP');
       }
     } catch (err) {
       const axiosError = err as AxiosError<ApiError>;
-      toast.error(axiosError.response?.data?.error || 'Erro ao buscar CEP.');
+      void showError(axiosError.response?.data?.error || 'Erro ao buscar CEP.');
     } finally {
       setLoadingCep(false);
     }
@@ -173,37 +200,42 @@ export default function MemberForm() {
 
     // Validações de campos obrigatórios
     if (!form.full_name.trim()) {
-      toast.warning('Nome completo é obrigatório.');
+      void showWarning('Nome completo é obrigatório.');
+      return;
+    }
+
+    if (!isValidEmail(form.email)) {
+      void showWarning('Informe um email válido.');
       return;
     }
 
     if (!form.phone.trim()) {
-      toast.warning('Telefone é obrigatório.');
+      void showWarning('Telefone é obrigatório.');
       return;
     }
 
     if (!form.birth_date) {
-      toast.warning('Data de nascimento é obrigatória.');
+      void showWarning('Data de nascimento é obrigatória.');
       return;
     }
 
     if (!form.gender) {
-      toast.warning('Gênero é obrigatório.');
+      void showWarning('Gênero é obrigatório.');
       return;
     }
 
     if (!form.zip_code.trim()) {
-      toast.warning('CEP é obrigatório.');
+      void showWarning('CEP é obrigatório.');
       return;
     }
 
     if (!form.address.trim()) {
-      toast.warning('Endereço é obrigatório.');
+      void showWarning('Endereço é obrigatório.');
       return;
     }
 
     if (!form.house_number.trim()) {
-      toast.warning('Número é obrigatório.');
+      void showWarning('Número é obrigatório.');
       return;
     }
 
@@ -212,6 +244,7 @@ export default function MemberForm() {
     // Preparar dados para envio (remover máscaras)
     const formData = {
       ...form,
+      email: form.email.trim(),
       phone: form.phone.replace(/\D/g, ''), // Remove máscara do telefone
       zip_code: form.zip_code.replace(/\D/g, ''), // Remove máscara do CEP
     };
@@ -219,15 +252,15 @@ export default function MemberForm() {
     try {
       if (isEditing) {
         await api.put(`/members/${id}`, formData);
-        toast.success('Membro atualizado com sucesso!');
+        await showSuccess('Membro atualizado com sucesso!');
       } else {
         await api.post('/members', formData);
-        toast.success('Membro cadastrado com sucesso!');
+        await showSuccess('Membro cadastrado com sucesso!');
       }
       navigate('/membros');
     } catch (err) {
       const axiosError = err as AxiosError<ApiError>;
-      toast.error(axiosError.response?.data?.error || 'Erro ao salvar membro.');
+      void showError(axiosError.response?.data?.error || 'Erro ao salvar membro.');
     } finally {
       setLoading(false);
     }
@@ -252,7 +285,7 @@ export default function MemberForm() {
           <div className="form-section">
             <span className="form-section-title">Dados Pessoais</span>
             <div className="form-row">
-              <div className="form-group-light">
+              <div className="form-group-light form-col-6">
                 <label htmlFor="full_name">Nome completo<span className="required">*</span></label>
                 <input
                   id="full_name"
@@ -264,12 +297,14 @@ export default function MemberForm() {
                   required
                 />
               </div>
-              <div className="form-group-light">
+              <div className="form-group-light form-col-6">
                 <label htmlFor="email">Email</label>
                 <input
                   id="email"
                   name="email"
-                  type="email"
+                  type="text"
+                  inputMode="email"
+                  autoComplete="email"
                   placeholder="email@exemplo.com"
                   value={form.email}
                   onChange={handleChange}
@@ -278,7 +313,7 @@ export default function MemberForm() {
             </div>
 
             <div className="form-row">
-              <div className="form-group-light">
+              <div className="form-group-light form-col-4">
                 <label htmlFor="phone">Telefone<span className="required">*</span></label>
                 <input
                   id="phone"
@@ -291,18 +326,19 @@ export default function MemberForm() {
                   required
                 />
               </div>
-              <div className="form-group-light">
+              <div className="form-group-light form-col-4">
                 <label htmlFor="birth_date">Data de Nascimento<span className="required">*</span></label>
                 <input
                   id="birth_date"
                   name="birth_date"
                   type="date"
                   value={form.birth_date}
-                  onChange={handleChange}
+                  onChange={handleBirthDateChange}
+                  onInput={handleBirthDateChange}
                   required
                 />
               </div>
-              <div className="form-group-light">
+              <div className="form-group-light form-col-4">
                 <label htmlFor="gender">Gênero<span className="required">*</span></label>
                 <select
                   id="gender"
@@ -324,7 +360,7 @@ export default function MemberForm() {
           <div className="form-section">
             <span className="form-section-title">Endereço</span>
             <div className="form-row">
-              <div className="form-group-light">
+              <div className="form-group-light form-col-12">
                 <label htmlFor="zip_code">CEP<span className="required">*</span></label>
                 <div className="cep-input-container">
                   <input
@@ -344,7 +380,7 @@ export default function MemberForm() {
               </div>
             </div>
             <div className="form-row">
-              <div className="form-group-light" style={{ gridColumn: '1 / -1' }}>
+              <div className="form-group-light form-col-12">
                 <label htmlFor="address">Endereço<span className="required">*</span></label>
                 <input
                   id="address"
@@ -360,7 +396,7 @@ export default function MemberForm() {
                   <small className="field-hint">Preenchido automaticamente pelo CEP</small>
                 )}
               </div>
-              <div className="form-group-light">
+              <div className="form-group-light form-col-6">
                 <label htmlFor="house_number">Número<span className="required">*</span></label>
                 <input
                   id="house_number"
@@ -372,7 +408,7 @@ export default function MemberForm() {
                   required
                 />
               </div>
-              <div className="form-group-light">
+              <div className="form-group-light form-col-6">
                 <label htmlFor="complement">Complemento</label>
                 <input
                   id="complement"
@@ -385,7 +421,7 @@ export default function MemberForm() {
               </div>
             </div>
             <div className="form-row">
-              <div className="form-group-light">
+              <div className="form-group-light form-col-6">
                 <label htmlFor="city">Cidade</label>
                 <input
                   id="city"
@@ -400,7 +436,7 @@ export default function MemberForm() {
                   <small className="field-hint">Preenchido automaticamente pelo CEP</small>
                 )}
               </div>
-              <div className="form-group-light">
+              <div className="form-group-light form-col-6">
                 <label htmlFor="state">Estado</label>
                 <input
                   id="state"
@@ -423,7 +459,7 @@ export default function MemberForm() {
           <div className="form-section">
             <span className="form-section-title">Dados da Igreja</span>
             <div className="form-row">
-              <div className="form-group-light">
+              <div className="form-group-light form-col-4">
                 <label htmlFor="baptism_date">Data de Batismo</label>
                 <input
                   id="baptism_date"
@@ -433,7 +469,7 @@ export default function MemberForm() {
                   onChange={handleChange}
                 />
               </div>
-              <div className="form-group-light">
+              <div className="form-group-light form-col-4">
                 <label htmlFor="membership_date">Data de Filiação</label>
                 <input
                   id="membership_date"
@@ -443,7 +479,7 @@ export default function MemberForm() {
                   onChange={handleChange}
                 />
               </div>
-              <div className="form-group-light">
+              <div className="form-group-light form-col-4">
                 <label htmlFor="status">Status</label>
                 <select
                   id="status"
@@ -462,16 +498,18 @@ export default function MemberForm() {
           {/* Observações */}
           <div className="form-section">
             <span className="form-section-title">Observações</span>
-            <div className="form-group-light">
-              <label htmlFor="notes">Notas</label>
-              <textarea
-                id="notes"
-                name="notes"
-                placeholder="Observações sobre o membro..."
-                value={form.notes}
-                onChange={handleChange}
-                rows={3}
-              />
+            <div className="form-row">
+              <div className="form-group-light form-col-12">
+                <label htmlFor="notes">Notas</label>
+                <textarea
+                  id="notes"
+                  name="notes"
+                  placeholder="Observações sobre o membro..."
+                  value={form.notes}
+                  onChange={handleChange}
+                  rows={5}
+                />
+              </div>
             </div>
           </div>
 

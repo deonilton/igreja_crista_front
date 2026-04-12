@@ -2,8 +2,8 @@ import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiBookOpen, FiArrowLeft } from 'react-icons/fi';
 import axios, { AxiosError } from 'axios';
-import { toast } from 'react-toastify';
 import type { ApiError } from '../../types';
+import { showSuccess, showError } from '../../utils/swalConfig';
 import './Register.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
@@ -34,11 +34,11 @@ export default function Register() {
 
     try {
       await axios.post(`${API_URL}/api/public/members`, formData);
-      toast.success('Cadastro realizado com sucesso! Aguarde o contato da igreja.');
+      await showSuccess('Cadastro realizado com sucesso! Aguarde o contato da igreja.');
       navigate('/login');
     } catch (err) {
       const axiosError = err as AxiosError<ApiError>;
-      toast.error(axiosError.response?.data?.error || 'Erro ao realizar cadastro.');
+      void showError(axiosError.response?.data?.error || 'Erro ao realizar cadastro.');
     } finally {
       setLoading(false);
     }
