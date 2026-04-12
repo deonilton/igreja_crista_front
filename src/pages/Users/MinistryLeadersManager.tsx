@@ -6,9 +6,18 @@ import type { Ministry, MinistryLeader, MinistryWithLeaders, MemberSearchResult 
 import './MinistryLeadersManager.css';
 
 const showToast = (type: 'success' | 'error', message: string) => {
-  Swal.fire({
-    icon: type,
-    title: type === 'success' ? 'Sucesso!' : 'Erro!',
+  if (type === 'error') {
+    void Swal.fire({
+      icon: 'error',
+      title: 'Erro!',
+      text: message,
+      confirmButtonText: 'Ok',
+    });
+    return;
+  }
+  void Swal.fire({
+    icon: 'success',
+    title: 'Sucesso!',
     text: message,
     timer: 3000,
     showConfirmButton: false,
@@ -140,9 +149,16 @@ export default function MinistryLeadersManager({ isOpen, onClose }: MinistryLead
       resetForm();
       loadMinistries();
     } catch (error: any) {
-      if (error.response?.status === 409) {
-        const errorMessage = error.response.data.error || error.response.data.message || '';
-        
+      const status = error.response?.status;
+      const errorMessage =
+        error.response?.data?.error || error.response?.data?.message || '';
+
+      if (status === 400 && errorMessage) {
+        showToast('error', errorMessage);
+        return;
+      }
+
+      if (status === 409) {
         if (errorMessage.includes('maximum number of leaders') || errorMessage.includes('maximum number')) {
           showToast('error','Este ministério já atingiu o limite de 2 líderes. Remova um líder existente antes de adicionar outro.');
         } else if (errorMessage.includes('already a leader') || errorMessage.includes('already is a leader')) {
@@ -192,9 +208,16 @@ export default function MinistryLeadersManager({ isOpen, onClose }: MinistryLead
       resetForm();
       loadMinistries();
     } catch (error: any) {
-      if (error.response?.status === 409) {
-        const errorMessage = error.response.data.error || error.response.data.message || '';
-        
+      const status = error.response?.status;
+      const errorMessage =
+        error.response?.data?.error || error.response?.data?.message || '';
+
+      if (status === 400 && errorMessage) {
+        showToast('error', errorMessage);
+        return;
+      }
+
+      if (status === 409) {
         if (errorMessage.includes('maximum number of leaders') || errorMessage.includes('maximum number')) {
           showToast('error','Este ministério já atingiu o limite de 2 líderes. Não é possível alterar para este membro.');
         } else if (errorMessage.includes('already a leader') || errorMessage.includes('already is a leader')) {
@@ -237,8 +260,12 @@ export default function MinistryLeadersManager({ isOpen, onClose }: MinistryLead
       await ministryLeadersService.removeLeader(leaderId);
       showToast('success','Líder removido com sucesso!');
       loadMinistries();
-    } catch (error) {
-      showToast('error','Erro ao remover líder');
+    } catch (error: any) {
+      const msg =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        (error instanceof Error ? error.message : '');
+      showToast('error', msg || 'Erro ao remover líder');
     }
   };
 

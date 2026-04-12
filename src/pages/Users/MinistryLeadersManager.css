@@ -121,7 +121,7 @@
 }
 .mlm-ministry-item-top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
 }
@@ -129,9 +129,11 @@
   font-weight: 600;
   font-size: 0.875rem;
   color: #111827;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 .mlm-badge {
   flex-shrink: 0;

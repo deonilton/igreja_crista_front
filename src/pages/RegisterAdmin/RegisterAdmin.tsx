@@ -2,8 +2,8 @@ import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiBookOpen, FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 import axios, { AxiosError } from 'axios';
-import { toast } from 'react-toastify';
 import type { ApiError } from '../../types';
+import { showSuccess, showError } from '../../utils/swalConfig';
 import './RegisterAdmin.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
@@ -51,11 +51,11 @@ export default function RegisterAdmin() {
 
     try {
       await axios.post(`${API_URL}/api/public/register-admin`, formData);
-      toast.success('Administrador cadastrado com sucesso! Faça login para acessar o sistema.');
+      await showSuccess('Administrador cadastrado com sucesso! Faça login para acessar o sistema.');
       navigate('/login');
     } catch (err) {
       const axiosError = err as AxiosError<ApiError>;
-      toast.error(axiosError.response?.data?.error || 'Erro ao realizar cadastro.');
+      void showError(axiosError.response?.data?.error || 'Erro ao realizar cadastro.');
     } finally {
       setLoading(false);
     }

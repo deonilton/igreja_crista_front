@@ -57,7 +57,7 @@ export default function AgeRangeStats() {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get<AgeRangeStatsType>('/members/age-ranges');
+      const response = await api.get<AgeRangeStatsType>('/dashboard/age-ranges');
       setData(response.data);
     } catch (err) {
       console.error('Erro ao carregar estatísticas por faixa etária:', err);

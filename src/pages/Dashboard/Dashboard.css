@@ -25,6 +25,71 @@
   border-radius: 2px;
 }
 
+.dashboard-assigned-ministries {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboard-assigned-ministries .dashboard-section-title {
+  margin-bottom: 0;
+}
+
+.dashboard-assigned-hint {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 2px;
+  line-height: 1.55;
+}
+
+.assigned-ministries-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.assigned-ministry-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 2px solid #5da14d;
+  border-radius: 10px;
+  color: #0f172a;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 1px 4px rgba(93, 161, 77, 0.12);
+}
+
+.assigned-ministry-chip:hover {
+  box-shadow: 0 4px 14px rgba(93, 161, 77, 0.22);
+  transform: translateY(-1px);
+  color: #0f172a;
+}
+
+.assigned-ministry-chip svg {
+  font-size: 1.1rem;
+  color: #5da14d;
+  flex-shrink: 0;
+}
+
+.dashboard-ministry-empty-hint {
+  padding: 14px 18px;
+  background: #fffbeb;
+  border: 1px solid #fbbf24;
+  border-radius: 10px;
+  color: #92400e;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.dashboard-ministry-empty-hint p {
+  margin: 0;
+}
+
 /* Stats Cards */
 .stats-grid {
   display: grid;

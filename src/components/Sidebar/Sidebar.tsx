@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom';
-import { FiHome, FiUsers, FiLogOut, FiBookOpen, FiHeart, FiSend, FiGift, FiMusic, FiSmile, FiSettings, FiFileText, FiUser, FiLock, FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { FiHome, FiUsers, FiLogOut, FiSettings, FiUser, FiLock, FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { MINISTRY_NAV_ITEMS } from '../../config/ministryNav';
 import Swal from '../../utils/swalConfig';
 import ChangePasswordModal from '../ChangePasswordModal';
 import './Sidebar.css';
@@ -28,18 +29,13 @@ export default function Sidebar() {
 
   const canAccessUsers = hasPermission('usuarios');
   const canAccessPastoralRoom = hasPermission('pastoral_room');
-  const canAccessDiaconia = hasPermission('ministerios', 'diaconia');
-  const canAccessPequenasFamilias = hasPermission('ministerios', 'pequenas_familias');
-  const canAccessEvangelismo = hasPermission('ministerios', 'evangelismo');
-  const canAccessLouvor = hasPermission('ministerios', 'louvor');
-  const canAccessMinisterioInfantil = hasPermission('ministerios', 'ministerio_infantil');
+  const canAccessMembros = hasPermission('membros');
 
-  const hasAnyMinistryAccess =
-    canAccessPequenasFamilias ||
-    canAccessEvangelismo ||
-    canAccessDiaconia ||
-    canAccessLouvor ||
-    canAccessMinisterioInfantil;
+  const visibleMinistryNavItems = MINISTRY_NAV_ITEMS.filter((item) =>
+    hasPermission('ministerios', item.id)
+  );
+
+  const hasAnyMinistryAccess = visibleMinistryNavItems.length > 0;
 
   const handleLogoutClick = async () => {
     const result = await Swal.fire({
@@ -88,15 +84,17 @@ export default function Sidebar() {
           Dashboard 
         </NavLink>
 
-        <NavLink
-          to="/membros"
-          className={({ isActive }) =>
-            `sidebar-link ${isActive ? 'active' : ''}`
-          }
-        >
-          <span className="sidebar-link-icon"><FiUsers /></span>
-          Membros
-        </NavLink>
+        {canAccessMembros && (
+          <NavLink
+            to="/membros"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'active' : ''}`
+            }
+          >
+            <span className="sidebar-link-icon"><FiUsers /></span>
+            Membros
+          </NavLink>
+        )}
 
         {canAccessPastoralRoom && (
           <NavLink
@@ -129,65 +127,21 @@ export default function Sidebar() {
           <span className="sidebar-section-title">Ministérios</span>
         )}
 
-        {canAccessPequenasFamilias && (
-          <NavLink
-            to="/pequenas-familias"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiHeart /></span>
-            Pequenas Famílias
-          </NavLink>
-        )}
-
-        {canAccessEvangelismo && (
-          <NavLink
-            to="/evangelismo"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiSend /></span>
-            Evangelismo e Missões
-          </NavLink>
-        )}
-
-        {canAccessDiaconia && (
-          <NavLink
-            to="/diaconia"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiGift /></span>
-            Diaconia
-          </NavLink>
-        )}
-
-        {canAccessLouvor && (
-          <NavLink
-            to="/louvor"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiMusic /></span>
-            Louvor
-          </NavLink>
-        )}
-
-        {canAccessMinisterioInfantil && (
-          <NavLink
-            to="/ministerio-infantil"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="sidebar-link-icon"><FiSmile /></span>
-            Ministério Infantil
-          </NavLink>
-        )}
+        {visibleMinistryNavItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.id}
+              to={item.to}
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <span className="sidebar-link-icon"><Icon /></span>
+              {item.label}
+            </NavLink>
+          );
+        })}
       </nav>
 
       <div className="sidebar-footer">

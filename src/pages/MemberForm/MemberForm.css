@@ -1,8 +1,12 @@
 .member-form-page {
-  max-width: 780px;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
 }
 
 .member-form-card {
+  width: 100%;
+  max-width: 100%;
   background: var(--surface-card);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
@@ -23,12 +27,16 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .form-section {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .form-section-title {
@@ -42,8 +50,37 @@
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  justify-items: stretch;
+}
+
+.form-group-light {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+.form-col-12 {
+  grid-column: span 12;
+}
+
+.form-col-6 {
+  grid-column: span 6;
+}
+
+.form-col-4 {
+  grid-column: span 4;
+}
+
+@media (max-width: 768px) {
+  .member-form .form-row .form-group-light {
+    grid-column: span 12;
+  }
 }
 
 .form-group-light label {
@@ -63,7 +100,10 @@
 .form-group-light input,
 .form-group-light select,
 .form-group-light textarea {
+  display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 10px 14px;
   background: var(--surface-card);
   border: 1px solid var(--border-color);
@@ -71,6 +111,11 @@
   color: var(--text-primary);
   font-size: 0.875rem;
   transition: all var(--transition-fast);
+}
+
+.form-group-light input[type='date'],
+.form-group-light input[type='time'] {
+  min-height: 42px;
 }
 
 .form-group-light input:focus,
@@ -84,12 +129,15 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  width: 32%;
+  min-width: 0;
 }
 
 .cep-input-container input,
 .cep-input-container .form-input {
-  flex: 1;
-  min-width: 120px;
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
 }
 
 .spinner-small {
@@ -126,7 +174,7 @@
 
 .form-group-light textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 120px;
 }
 
 .form-group-light input::placeholder {
@@ -135,7 +183,9 @@
 
 .form-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   padding-top: 8px;
+  width: 100%;
 }
 

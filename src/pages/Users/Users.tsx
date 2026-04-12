@@ -221,6 +221,7 @@ export default function Users() {
       {modalOpen && (
         <UserModal
           user={selectedUser}
+          existingUsers={users}
           onClose={handleModalClose}
         />
       )}
