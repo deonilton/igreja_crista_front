@@ -40,6 +40,8 @@
 
 .app-content {
   flex: 1;
+  /* Permite que esta área seja o scroll container (sem isso o scroll vai para o body e scrollTop aqui fica 0). */
+  min-height: 0;
   padding: 28px 32px;
   overflow-y: auto;
   max-width: 1400px;

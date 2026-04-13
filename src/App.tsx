@@ -17,7 +17,11 @@ import Diaconia from './pages/Diaconia/Diaconia';
 import Louvor from './pages/Louvor/Louvor';
 import MinisterioInfantil from './pages/MinisterioInfantil/MinisterioInfantil';
 import RelatorioCulto from './pages/RelatorioCulto/RelatorioCulto';
-import SalaPastoral from './pages/SalaPastoral/SalaPastoral';
+import SalaPastoralOutlet from './pages/SalaPastoral/SalaPastoralOutlet';
+import SalaPastoralDashboard from './pages/SalaPastoral/SalaPastoralDashboard';
+import BibleStudyHomePage from './pages/SalaPastoral/BibleStudyHomePage';
+import BibleBookPage from './pages/SalaPastoral/BibleBookPage';
+import BibleChapterPage from './pages/SalaPastoral/BibleChapterPage';
 import Forbidden from './pages/Forbidden/Forbidden';
 
 interface RouteGuardProps {
@@ -163,7 +167,19 @@ function AppRoutes() {
         <Route path="/louvor" element={<PrivateRoute resource="ministerios" ministry="louvor"><Louvor /></PrivateRoute>} />
         <Route path="/ministerio-infantil" element={<PrivateRoute resource="ministerios" ministry="ministerio_infantil"><MinisterioInfantil /></PrivateRoute>} />
         <Route path="/relatorio-culto" element={<PrivateRoute resource="ministerios" ministry="diaconia"><RelatorioCulto /></PrivateRoute>} />
-        <Route path="/sala-pastoral" element={<PrivateRoute resource="pastoral_room"><SalaPastoral /></PrivateRoute>} />
+        <Route
+          path="/sala-pastoral"
+          element={
+            <PrivateRoute resource="pastoral_room">
+              <SalaPastoralOutlet />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<BibleStudyHomePage />} />
+          <Route path="painel" element={<SalaPastoralDashboard />} />
+          <Route path="livro/:book" element={<BibleBookPage />} />
+          <Route path="livro/:book/capitulo/:chapter" element={<BibleChapterPage />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

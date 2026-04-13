@@ -1,12 +1,23 @@
 import { useState, useEffect } from 'react';
-import { FiUser, FiCalendar, FiBook, FiMessageSquare, FiSettings, FiFileText, FiAlertCircle, FiClock, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import {
+  FiUser,
+  FiCalendar,
+  FiBook,
+  FiMessageSquare,
+  FiSettings,
+  FiFileText,
+  FiAlertCircle,
+  FiClock,
+  FiChevronLeft,
+  FiChevronRight,
+} from 'react-icons/fi';
 import { useAuth } from '../../contexts/AuthContext';
 import AconselhamentoAgenda from './AconselhamentoAgenda';
 import ViewReportModal from './ViewReportModal';
 import ViewOccurrenceModal from './ViewOccurrenceModal';
 import ViewSmallFamilyReportModal from './ViewSmallFamilyReportModal';
 import ViewCasaDePazReportModal from './ViewCasaDePazReportModal';
-import EstudosBiblicos from './EstudosBiblicos';
 import api from '../../services/api';
 import { localISODate, apiCivilDateKey } from '../../utils/localDate';
 import './SalaPastoral.css';
@@ -66,10 +77,11 @@ interface Aconselhamento {
   status: string;
 }
 
-export default function SalaPastoral() {
+/** Painel principal da Sala Pastoral (`/sala-pastoral/painel`). */
+export default function SalaPastoralDashboard() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(true);
   const [showAgenda, setShowAgenda] = useState(false);
-  const [showEstudosBiblicos, setShowEstudosBiblicos] = useState(false);
   const [showReports, setShowReports] = useState(false);
   const [cultReports, setCultReports] = useState<CultReport[]>([]);
   const [smallFamilyReports, setSmallFamilyReports] = useState<SmallFamilyReport[]>([]);
@@ -80,11 +92,12 @@ export default function SalaPastoral() {
   const [selectedSmallFamilyReport, setSelectedSmallFamilyReport] = useState<any>(null);
   const [selectedEvangelismoReport, setSelectedEvangelismoReport] = useState<EvangelismoReportPastoral | null>(null);
   const [selectedOccurrence, setSelectedOccurrence] = useState<any>(null);
-  const [selectedMonth, setSelectedMonth] = useState<{key: string, label: string, data: Aconselhamento[]} | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<{ key: string; label: string; data: Aconselhamento[] } | null>(
+    null
+  );
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(getStartOfWeek(new Date()));
   const { user } = useAuth();
 
-  // Função para obter o início da semana (domingo)
   function getStartOfWeek(date: Date): Date {
     const d = new Date(date);
     const day = d.getDay();
@@ -92,7 +105,6 @@ export default function SalaPastoral() {
     return new Date(d.setDate(diff));
   }
 
-  // Função para obter os dias da semana
   function getWeekDays(startDate: Date): Date[] {
     const days: Date[] = [];
     for (let i = 0; i < 7; i++) {
@@ -103,51 +115,43 @@ export default function SalaPastoral() {
     return days;
   }
 
-  // Navegar para semana anterior
   const previousWeek = () => {
     const newStart = new Date(currentWeekStart);
     newStart.setDate(currentWeekStart.getDate() - 7);
     setCurrentWeekStart(newStart);
   };
 
-  // Navegar para próxima semana
   const nextWeek = () => {
     const newStart = new Date(currentWeekStart);
     newStart.setDate(currentWeekStart.getDate() + 7);
     setCurrentWeekStart(newStart);
   };
 
-  // Voltar para semana atual
   const goToCurrentWeek = () => {
     setCurrentWeekStart(getStartOfWeek(new Date()));
   };
 
-  // Filtrar eventos por dia
   const getEventsForDay = (date: Date) => {
     const dateStr = localISODate(date);
 
-    const cultReportsForDay = cultReports.filter(r =>
-      apiCivilDateKey(r.cult_date) === dateStr
-    );
+    const cultReportsForDay = cultReports.filter((r) => apiCivilDateKey(r.cult_date) === dateStr);
 
-    const smallFamilyReportsForDay = smallFamilyReports.filter(r =>
-      apiCivilDateKey(r.cult_date) === dateStr
-    );
+    const smallFamilyReportsForDay = smallFamilyReports.filter((r) => apiCivilDateKey(r.cult_date) === dateStr);
 
-    const occurrencesForDay = occurrences.filter(o =>
-      apiCivilDateKey(o.date) === dateStr
-    );
+    const occurrencesForDay = occurrences.filter((o) => apiCivilDateKey(o.date) === dateStr);
 
-    const evangelismoForDay = evangelismoReports.filter(r =>
-      apiCivilDateKey(r.cult_date) === dateStr
-    );
-    
+    const evangelismoForDay = evangelismoReports.filter((r) => apiCivilDateKey(r.cult_date) === dateStr);
+
     return {
       cultReports: cultReportsForDay,
       smallFamilyReports: smallFamilyReportsForDay,
       occurrences: occurrencesForDay,
       evangelismoReports: evangelismoForDay,
-      total: cultReportsForDay.length + smallFamilyReportsForDay.length + occurrencesForDay.length + evangelismoForDay.length
+      total:
+        cultReportsForDay.length +
+        smallFamilyReportsForDay.length +
+        occurrencesForDay.length +
+        evangelismoForDay.length,
     };
   };
 
@@ -167,7 +171,7 @@ export default function SalaPastoral() {
     try {
       const [pastoralRes, aconselhamentosRes] = await Promise.all([
         api.get('/pastoral-room'),
-        api.get('/aconselhamentos?limit=100')
+        api.get('/aconselhamentos?limit=100'),
       ]);
 
       const data = pastoralRes.data;
@@ -185,10 +189,6 @@ export default function SalaPastoral() {
     return <AconselhamentoAgenda onBack={() => setShowAgenda(false)} />;
   }
 
-  if (showEstudosBiblicos) {
-    return <EstudosBiblicos onBack={() => setShowEstudosBiblicos(false)} />;
-  }
-
   if (loading) {
     return (
       <div className="sala-pastoral-loading">
@@ -201,7 +201,20 @@ export default function SalaPastoral() {
   if (showReports) {
     const weekDays = getWeekDays(currentWeekStart);
     const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-    const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    const monthNames = [
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
+    ];
     const today = localISODate();
 
     return (
@@ -215,15 +228,18 @@ export default function SalaPastoral() {
           ← Voltar
         </button>
 
-        {/* Calendário Semanal */}
         <div className="weekly-calendar">
           <div className="calendar-header">
             <button className="calendar-nav-btn" onClick={previousWeek}>
               <FiChevronLeft />
             </button>
             <div className="calendar-title">
-              <h3>{monthNames[currentWeekStart.getMonth()]} {currentWeekStart.getFullYear()}</h3>
-              <button className="today-btn" onClick={goToCurrentWeek}>Hoje</button>
+              <h3>
+                {monthNames[currentWeekStart.getMonth()]} {currentWeekStart.getFullYear()}
+              </h3>
+              <button className="today-btn" onClick={goToCurrentWeek}>
+                Hoje
+              </button>
             </div>
             <button className="calendar-nav-btn" onClick={nextWeek}>
               <FiChevronRight />
@@ -245,9 +261,9 @@ export default function SalaPastoral() {
                   <div className="day-events">
                     {events.total > 0 ? (
                       <>
-                        {events.cultReports.map(report => (
-                          <div 
-                            key={`cult-${report.id}`} 
+                        {events.cultReports.map((report) => (
+                          <div
+                            key={`cult-${report.id}`}
                             className="event-item cult-event"
                             onClick={() => setSelectedReport(report)}
                           >
@@ -255,9 +271,9 @@ export default function SalaPastoral() {
                             <span>Culto</span>
                           </div>
                         ))}
-                        {events.smallFamilyReports.map(report => (
-                          <div 
-                            key={`family-${report.id}`} 
+                        {events.smallFamilyReports.map((report) => (
+                          <div
+                            key={`family-${report.id}`}
                             className="event-item family-event"
                             onClick={() => setSelectedSmallFamilyReport(report)}
                           >
@@ -265,9 +281,9 @@ export default function SalaPastoral() {
                             <span>Pequena Família</span>
                           </div>
                         ))}
-                        {events.evangelismoReports.map(report => (
-                          <div 
-                            key={`casa-paz-${report.id}`} 
+                        {events.evangelismoReports.map((report) => (
+                          <div
+                            key={`casa-paz-${report.id}`}
                             className="event-item casa-paz-event"
                             onClick={() => setSelectedEvangelismoReport(report)}
                           >
@@ -275,9 +291,9 @@ export default function SalaPastoral() {
                             <span>Casa de Paz</span>
                           </div>
                         ))}
-                        {events.occurrences.map(occ => (
-                          <div 
-                            key={`occ-${occ.id}`} 
+                        {events.occurrences.map((occ) => (
+                          <div
+                            key={`occ-${occ.id}`}
                             className="event-item occurrence-event"
                             onClick={() => setSelectedOccurrence(occ)}
                           >
@@ -299,27 +315,30 @@ export default function SalaPastoral() {
         <div className="sala-pastoral-section">
           <h2>Aconselhamentos Pastorais</h2>
           <p style={{ color: '#6b7280', marginBottom: '20px' }}>Clique em um mês para ver os aconselhamentos</p>
-          
+
           <div className="months-grid">
             {['04', '05', '06'].map((monthNum) => {
-              const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
               const monthLabel = monthNames[parseInt(monthNum) - 1];
               const year = new Date().getFullYear();
               const monthKey = `${year}-${monthNum}`;
-              
-              const monthAconselhamentos = aconselhamentos.filter((a: Aconselhamento) => 
-                a.status !== 'cancelado' && a.data?.startsWith(monthKey)
+
+              const monthAconselhamentos = aconselhamentos.filter(
+                (a: Aconselhamento) => a.status !== 'cancelado' && a.data?.startsWith(monthKey)
               );
-              
+
               return (
-                <div 
-                  key={monthKey} 
+                <div
+                  key={monthKey}
                   className="month-card"
-                  onClick={() => { setSelectedMonth({ key: monthKey, label: monthLabel, data: monthAconselhamentos }); }}
+                  onClick={() => {
+                    setSelectedMonth({ key: monthKey, label: monthLabel, data: monthAconselhamentos });
+                  }}
                 >
                   <h3>{monthLabel}</h3>
                   <span className="year">{year}</span>
-                  <span className="count">{monthAconselhamentos.length} aconselhamento{monthAconselhamentos.length !== 1 ? 's' : ''}</span>
+                  <span className="count">
+                    {monthAconselhamentos.length} aconselhamento{monthAconselhamentos.length !== 1 ? 's' : ''}
+                  </span>
                 </div>
               );
             })}
@@ -331,7 +350,9 @@ export default function SalaPastoral() {
             <div className="modal-content cult-report-modal" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h2>Aconselhamentos - {selectedMonth.label}</h2>
-                <button className="modal-close-btn" onClick={() => setSelectedMonth(null)}>×</button>
+                <button className="modal-close-btn" onClick={() => setSelectedMonth(null)}>
+                  ×
+                </button>
               </div>
               <div className="modal-body">
                 {selectedMonth.data.length > 0 ? (
@@ -344,7 +365,9 @@ export default function SalaPastoral() {
                         <div className="activity-content">
                           <h4>{aconselhamento.nome_pessoa}</h4>
                           <p>Horário: {aconselhamento.horario}</p>
-                          <span className="activity-time">{new Date(aconselhamento.data).toLocaleDateString('pt-BR')}</span>
+                          <span className="activity-time">
+                            {new Date(aconselhamento.data).toLocaleDateString('pt-BR')}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -354,17 +377,15 @@ export default function SalaPastoral() {
                 )}
               </div>
               <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setSelectedMonth(null)}>Fechar</button>
+                <button className="btn btn-secondary" onClick={() => setSelectedMonth(null)}>
+                  Fechar
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        <ViewReportModal
-          isOpen={!!selectedReport}
-          onClose={() => setSelectedReport(null)}
-          report={selectedReport}
-        />
+        <ViewReportModal isOpen={!!selectedReport} onClose={() => setSelectedReport(null)} report={selectedReport} />
 
         <ViewSmallFamilyReportModal
           isOpen={!!selectedSmallFamilyReport}
@@ -417,14 +438,16 @@ export default function SalaPastoral() {
           </div>
         </div>
 
-        <div className="pastoral-card" onClick={() => setShowEstudosBiblicos(true)} style={{ cursor: 'pointer' }}>
+        <div className="pastoral-card" onClick={() => navigate('/sala-pastoral')} style={{ cursor: 'pointer' }}>
           <div className="pastoral-card-icon">
             <FiBook />
           </div>
           <div className="pastoral-card-content">
             <h3>Estudos Bíblicos</h3>
             <p>Acesse materiais e prepare estudos bíblicos e pregações</p>
-            <button type="button" className="pastoral-btn">Acessar</button>
+            <button type="button" className="pastoral-btn">
+              Acessar
+            </button>
           </div>
         </div>
 
