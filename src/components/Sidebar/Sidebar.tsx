@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { FiHome, FiUsers, FiLogOut, FiSettings, FiUser, FiLock, FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -8,6 +8,7 @@ import ChangePasswordModal from '../ChangePasswordModal';
 import './Sidebar.css';
 
 export default function Sidebar() {
+  const { pathname } = useLocation();
   const { user, logout, hasPermission } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -98,10 +99,8 @@ export default function Sidebar() {
 
         {canAccessPastoralRoom && (
           <NavLink
-            to="/sala-pastoral"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
+            to="/sala-pastoral/painel"
+            className={() => `sidebar-link ${pathname.startsWith('/sala-pastoral') ? 'active' : ''}`}
           >
             <span className="sidebar-link-icon"><FiUser /></span>
             Sala Pastoral
