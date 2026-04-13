@@ -13,7 +13,8 @@ const pageTitles: Record<string, string> = {
   '/louvor': 'Louvor',
   '/ministerio-infantil': 'Ministério Infantil',
   '/relatorio-culto': 'Relatório de Culto',
-  '/sala-pastoral': 'Sala Pastoral',
+  '/sala-pastoral': 'Estudos Bíblicos',
+  '/sala-pastoral/painel': 'Sala Pastoral',
 };
 
 export default function Layout() {
@@ -21,10 +22,15 @@ export default function Layout() {
 
   const getTitle = (): string => {
     let baseTitle = 'Painel';
-    if (location.pathname.match(/^\/membros\/\d+\/editar$/)) {
+    const { pathname } = location;
+    if (pathname.match(/^\/membros\/\d+\/editar$/)) {
       baseTitle = 'Editar Membro';
-    } else if (pageTitles[location.pathname]) {
-      baseTitle = pageTitles[location.pathname];
+    } else if (pathname.startsWith('/sala-pastoral/livro/') && pathname.includes('/capitulo/')) {
+      baseTitle = 'Leitura bíblica';
+    } else if (pathname.match(/^\/sala-pastoral\/livro\//)) {
+      baseTitle = 'Capítulos';
+    } else if (pageTitles[pathname]) {
+      baseTitle = pageTitles[pathname];
     }
     return `Igreja Cristã da Família - ${baseTitle}`;
   };
