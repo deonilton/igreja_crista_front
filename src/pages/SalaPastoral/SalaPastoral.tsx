@@ -6,6 +6,7 @@ import ViewReportModal from './ViewReportModal';
 import ViewOccurrenceModal from './ViewOccurrenceModal';
 import ViewSmallFamilyReportModal from './ViewSmallFamilyReportModal';
 import ViewCasaDePazReportModal from './ViewCasaDePazReportModal';
+import EstudosBiblicos from './EstudosBiblicos';
 import api from '../../services/api';
 import { localISODate, apiCivilDateKey } from '../../utils/localDate';
 import './SalaPastoral.css';
@@ -68,6 +69,7 @@ interface Aconselhamento {
 export default function SalaPastoral() {
   const [loading, setLoading] = useState<boolean>(true);
   const [showAgenda, setShowAgenda] = useState(false);
+  const [showEstudosBiblicos, setShowEstudosBiblicos] = useState(false);
   const [showReports, setShowReports] = useState(false);
   const [cultReports, setCultReports] = useState<CultReport[]>([]);
   const [smallFamilyReports, setSmallFamilyReports] = useState<SmallFamilyReport[]>([]);
@@ -181,6 +183,10 @@ export default function SalaPastoral() {
 
   if (showAgenda) {
     return <AconselhamentoAgenda onBack={() => setShowAgenda(false)} />;
+  }
+
+  if (showEstudosBiblicos) {
+    return <EstudosBiblicos onBack={() => setShowEstudosBiblicos(false)} />;
   }
 
   if (loading) {
@@ -411,14 +417,14 @@ export default function SalaPastoral() {
           </div>
         </div>
 
-        <div className="pastoral-card">
+        <div className="pastoral-card" onClick={() => setShowEstudosBiblicos(true)} style={{ cursor: 'pointer' }}>
           <div className="pastoral-card-icon">
             <FiBook />
           </div>
           <div className="pastoral-card-content">
             <h3>Estudos Bíblicos</h3>
             <p>Acesse materiais e prepare estudos bíblicos e pregações</p>
-            <button className="pastoral-btn">Acessar</button>
+            <button type="button" className="pastoral-btn">Acessar</button>
           </div>
         </div>
 
