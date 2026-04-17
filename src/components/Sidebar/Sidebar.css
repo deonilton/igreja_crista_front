@@ -289,6 +289,61 @@
   }
 }
 
+.sidebar-help-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  margin: 16px 0 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-help-label svg {
+  font-size: 0.9rem;
+}
+
+.sidebar-help-links {
+  display: flex;
+  gap: 10px;
+  padding: 0 12px;
+  margin: 0 0 16px;
+}
+
+.sidebar-help-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.sidebar-help-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.sidebar-help-link.whatsapp {
+  background: #25D366;
+}
+
+.sidebar-help-link.whatsapp:hover {
+  background: #20bd5a;
+}
+
+.sidebar-help-link svg {
+  font-size: 1.2rem;
+}
+
 .user-dropdown-item {
   display: flex;
   align-items: center;
