@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { FiHome, FiUsers, FiLogOut, FiSettings, FiUser, FiLock, FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { FiHome, FiUsers, FiLogOut, FiSettings, FiUser, FiLock, FiChevronUp, FiChevronDown, FiHelpCircle, FiMail } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa';
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { MINISTRY_NAV_ITEMS } from '../../config/ministryNav';
@@ -144,6 +145,18 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
+        <div className="sidebar-help-label">
+          <FiHelpCircle />
+          <span>Precisa de ajuda?</span>
+        </div>
+        <div className="sidebar-help-links">
+          <a href="mailto:deoniltonborges1970@gmail.com" className="sidebar-help-link" title="Enviar e-mail">
+            <FiMail />
+          </a>
+          <a href="https://wa.me/5512996395270" target="_blank" rel="noopener noreferrer" className="sidebar-help-link whatsapp" title="WhatsApp">
+            <FaWhatsapp />
+          </a>
+        </div>
         <div className="sidebar-user">
           <div className="sidebar-user-menu-container">
             <button

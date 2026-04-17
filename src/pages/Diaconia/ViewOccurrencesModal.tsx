@@ -10,19 +10,55 @@ interface ViewOccurrencesModalProps {
 
 import './ViewOccurrencesModal.css';
 
-export default function ViewOccurrencesModal({ 
-  isOpen, 
-  onClose, 
-  occurrences, 
-  loading 
+export default function ViewOccurrencesModal({
+  isOpen,
+  onClose,
+  occurrences,
+  loading
 }: ViewOccurrencesModalProps) {
-  
-  const handlePrint = () => {
-    const printContent = document.getElementById('occurrences-print-content');
-    if (!printContent) return;
 
+  // Função para escapar HTML e prevenir XSS
+  function escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
+  }
+
+  const handlePrint = () => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
+
+    // Construir HTML de forma segura, escapando todos os dados do usuário
+    const occurrencesHtml = occurrences.map((occurrence) => `
+      <div class="occurrence-item">
+        <div class="occurrence-header">
+          <span class="occurrence-id">#${escapeHtml(String(occurrence.id))}</span>
+          <span class="occurrence-date">
+            ${escapeHtml(new Date(occurrence.date).toLocaleDateString('pt-BR'))}
+          </span>
+        </div>
+
+        <div class="occurrence-content">
+          <div class="field">
+            <strong>Responsável:</strong> ${escapeHtml(String(occurrence.reporter_name || ''))}
+          </div>
+
+          <div class="field">
+            <strong>Local:</strong> ${escapeHtml(String(occurrence.location || ''))}
+          </div>
+
+          ${occurrence.witnesses ? `
+          <div class="field">
+            <strong>Testemunhas:</strong> ${escapeHtml(String(occurrence.witnesses))}
+          </div>
+          ` : ''}
+
+          <div class="description">
+            <strong>Histórico da ocorrência:</strong> ${escapeHtml(String(occurrence.description || ''))}
+          </div>
+        </div>
+      </div>
+    `).join('');
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -43,7 +79,11 @@ export default function ViewOccurrencesModal({
           </style>
         </head>
         <body>
-          ${printContent.innerHTML}
+          <div class="print-header">
+            <h1>Igreja Cristã - Relatório de Ocorrências</h1>
+            <p>Emitido em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+          </div>
+          ${occurrences.length > 0 ? occurrencesHtml : '<p class="no-occurrences">Nenhuma ocorrência registrada</p>'}
         </body>
       </html>
     `;
@@ -62,23 +102,23 @@ export default function ViewOccurrencesModal({
           <div className="modal-header-content">
             <h2>Ocorrências Registradas</h2>
           </div>
-          <div 
-              className="modal-header-actions"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}
-            >
-            <button 
-              className="modal-print-btn print-button-visible" 
+          <div
+            className="modal-header-actions"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}
+          >
+            <button
+              className="modal-print-btn print-button-visible"
               onClick={handlePrint}
             >
               <FiPrinter />
               Imprimir
             </button>
-            <button 
-              className="modal-close-btn" 
+            <button
+              className="modal-close-btn"
               onClick={onClose}
               style={{
                 background: 'transparent',
@@ -110,7 +150,7 @@ export default function ViewOccurrencesModal({
                   <h1>Igreja Cristã - Relatório de Ocorrências</h1>
                   <p>Emitido em: {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}</p>
                 </div>
-                
+
                 {occurrences.map((occurrence) => (
                   <div key={occurrence.id} className="occurrence-item">
                     <div className="occurrence-header">
@@ -119,22 +159,22 @@ export default function ViewOccurrencesModal({
                         {new Date(occurrence.date).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
-                    
+
                     <div className="occurrence-content">
                       <div className="field">
                         <strong>Responsável:</strong> {occurrence.reporter_name}
                       </div>
-                      
+
                       <div className="field">
                         <strong>Local:</strong> {occurrence.location}
                       </div>
-                      
+
                       {occurrence.witnesses && (
                         <div className="field">
                           <strong>Testemunhas:</strong> {occurrence.witnesses}
                         </div>
                       )}
-                      
+
                       <div className="description">
                         <strong>Histórico da ocorrência:</strong> {occurrence.description}
                       </div>
